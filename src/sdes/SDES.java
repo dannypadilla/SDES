@@ -25,10 +25,9 @@ public class SDES {
     static byte[] keyStraightPBoxTable = {2, 4, 1, 6, 3, 9, 0, 8, 7, 5}; // straight pbox table for the key generator
     static byte[] compressionPBoxTable = {5, 2, 6, 3, 7, 4, 9, 8}; // compression pbox table for key generator
 
-
     public static void main(String[] args) {
 
-
+        
 
     }
 
@@ -37,7 +36,7 @@ public class SDES {
         byte[] plainText = new byte[plainTextBlock.length];
 
         // permute
-        plainText = permute(plainTextBlock, initialPBoxTable);
+        plainText = permute(8, 8, plainTextBlock, initialPBoxTable);
 
         // split
         byte[] leftSplit = split(plainText, 'l');
@@ -50,11 +49,11 @@ public class SDES {
     }
 
     // permutes a byte array based on the permutation table passed through
-    static byte[] permute(byte[] plainText, byte[] permutationTable) {
+    static byte[] permute(int numberOfBitsIn, int numberOfBitsOut, byte[] plainText, byte[] permutationTable) {
 
-        byte[] newPlaintext = new byte[plainText.length];
+        byte[] newPlaintext = new byte[numberOfBitsOut];
 
-        for (int i = 0; i < plainText.length; i++) {
+        for (int i = 0; i < numberOfBitsOut; i++) {
             newPlaintext[i] = plainText[permutationTable[i]];
         }
         return newPlaintext;
@@ -104,7 +103,8 @@ public class SDES {
         return shiftedLeftOne;
     }
 
-    // tests used for proving permutation works and outputs properly.. initial perm for now
+    // tests used for proving permutation works and outputs properly.
+    // handles initial permutation and expansion permutation
     static void permuteTestCase() {
 
         // original test block
@@ -114,11 +114,37 @@ public class SDES {
         byte[] permutedPlainTextBlock = {1, 0, 1, 0, 0, 1, 1, 0};
 
         // permute plaintext based
-        byte[] initialPBox = permute(plainTextBlock, initialPBoxTable);
+        byte[] initialPBox = permute(8, 8, plainTextBlock, initialPBoxTable);
 
         // testing to see if original permutations are equal
+        System.out.println("Original Test block: ");
         for(int i = 0; i < plainTextBlock.length; i++) {
-            System.out.println(initialPBox[i] == permutedPlainTextBlock[i]);
+            System.out.print(plainTextBlock[i] );
+        }
+
+        System.out.println("\n\nPermuted by hand to compare if next line is correct:");
+        for(int i = 0; i < permutedPlainTextBlock.length; i++ ) {
+            System.out.print(permutedPlainTextBlock[i]);
+        }
+
+        System.out.println("\n\nAfter running permuted function. Should equal top permuted line:");
+        for(int i = 0; i < initialPBox.length; i++ ) {
+            System.out.print(initialPBox[i] );
+        }
+
+        // test sample for expansion
+        byte[] expansionTest = {1, 2, 3, 4};
+        // use expansion permutation table: 4 bits to 8 bits
+        byte[] expansion = permute(4, 8, expansionTest, expansionPermutationTable);
+
+        System.out.println("\n\nOriginal test sample to run expansion test: ");
+        for(int i = 0; i < expansion.length; i++ ) {
+            System.out.print(expansion[i] );
+        }
+
+        System.out.println("\n\nAfter running expansion permutation: ");
+        for(int i = 0; i < expansion.length; i++ ) {
+            System.out.print(expansion[i] );
         }
 
     }
