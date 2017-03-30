@@ -44,14 +44,18 @@ public class SDES {
         // empty array
         byte[] splitPlainText = new byte[indexLength];
 
+//inserted code
+        int counter = indexLength;
         if(leftOrRight == 'l' || leftOrRight == 'L') {
-            indexLength = 2;
+            for(int i = 0; i < indexLength; i++){
+                splitPlainText[i] = plainTextBlock[i];
+            }
         }
-
-        for(int i = 0; i < indexLength; i++) {
-
+        else{
+            for(int i = 0; i < indexLength; i++, counter++){
+                splitPlainText[i] = plainTextBlock[counter];
+            }
         }
-
         return splitPlainText;
     }
 
@@ -66,7 +70,14 @@ public class SDES {
     /* Key-Generator */
     void keyGenerator() {}
 
-    void shiftLeft() {}
+    byte[] shiftLeft(byte[] plainText) {
+        byte[] shiftedLeftOne = new byte[plainText.length];
+        for(int i = 0; i < shiftedLeftOne.length-2; i++){
+            shiftedLeftOne[i] = plainText[i+1];
+        }
+        shiftedLeftOne[shiftedLeftOne.length-1] = plainText[0];
+        return shiftedLeftOne;
+    }
 
     // tests used for proving permutation works and outputs properly.. initial perm for now
     void permuteTestCase() {
