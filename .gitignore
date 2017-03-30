@@ -1,0 +1,11 @@
+
+# macOS
+*.DS_Store
+
+# Jetbrains User-specific stuff:
+.idea/workspace.xml
+.idea/tasks.xml
+
+# emacs
+*~
+\#*\#
