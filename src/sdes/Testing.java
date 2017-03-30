@@ -1,8 +1,5 @@
 package sdes;
 
-/**
- * Created by dannypadilla on 3/29/17.
- */
 public class Testing {
 
     // 8 bit plain text
