@@ -72,7 +72,7 @@ public class SDES {
 
     byte[] shiftLeft(byte[] plainText) {
         byte[] shiftedLeftOne = new byte[plainText.length];
-        for(int i = 0; i < shiftedLeftOne.length-2; i++){
+        for(int i = 0; i < shiftedLeftOne.length - 1; i++){
             shiftedLeftOne[i] = plainText[i+1];
         }
         shiftedLeftOne[shiftedLeftOne.length-1] = plainText[0];
