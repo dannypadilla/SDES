@@ -83,6 +83,18 @@ public class SDES {
         return splitPlainText;
     }
 
+    static byte[] whitenerXOR(byte[] plainText, byte[] key) {
+
+        int bits = plainText.length;
+
+        byte[] xor = new byte[bits];
+
+        for(int i = 0; i < bits; i++ ) {
+            xor[i] = (byte)(plainText[i] ^ key[i] );
+        }
+        return xor;
+    }
+
     void mixer() {}
 
     void swapper() {}
@@ -385,6 +397,32 @@ public class SDES {
 
         System.out.println("\nCombined array:");
         print(sample);
+
+    }
+
+    static void whitenerXORTestCase() {
+
+        byte[] plainText = {1, 1, 1, 1, 0, 0, 1, 0};
+
+        byte[] roundOneKey = {1, 0, 1, 1, 1, 1, 0, 0};
+
+        // uses whitenerXOR function here
+        byte[] xor = whitenerXOR(plainText, roundOneKey);
+
+        System.out.println("\nOriginal Plain Text");
+        print(plainText);
+        System.out.println("\nOriginal Round One Key");
+        print(roundOneKey);
+
+        System.out.println("\nXOR array");
+        print(xor);
+        System.out.println();
+
+        // show as a XOR table
+        print(plainText);
+        print(roundOneKey);
+        System.out.println("-----------");
+        print(xor);
 
     }
 }
