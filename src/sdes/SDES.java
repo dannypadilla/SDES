@@ -91,7 +91,7 @@ public class SDES {
 
     void substitute() {}
 
-    /* Key-Generator */
+    // key generator
     static byte[][] keyGenerator(byte[] cipherKey, int rounds) {
 
         int outputKeyLength = 8; // only for SDES
@@ -160,7 +160,7 @@ public class SDES {
     }
 
 
-    /* Testing */
+    /* *********** Testing *********** */
 
     // handles initial permutation, expansion, and compression permutation
     static void permuteTestCase() {
@@ -333,6 +333,16 @@ public class SDES {
         System.out.println("\n** Round Two Key ** ");
         print(roundTwoKey);
 
+    }
+
+    static void cipherKeyGenTestCase() {
+
+        // this test is from the book - TABLE O.2 pg. 666
+        byte[] ciph = {1, 0, 1, 1, 1, 0, 0, 1, 1, 0};
+        byte[][] newCiph = keyGenerator(ciph, 2);
+
+        print(newCiph[0]);
+        print(newCiph[1]);
     }
 
     static void combineTestCase() {
