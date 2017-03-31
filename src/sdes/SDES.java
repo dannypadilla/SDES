@@ -27,9 +27,7 @@ public class SDES {
 
     public static void main(String[] args) {
 
-        byte[] test = sBox2Table[1];
-        print(test);
-        System.out.println(sBox2Table[1][2] );
+        
 
     }
 
@@ -100,19 +98,21 @@ public class SDES {
 
         byte[][] storedKeys = new byte[rounds][outputKeyLength];
 
-        // permute
+        // permute straight P box
         byte[] permutedKey = permute(10, 10, cipherKey, keyStraightPBoxTable);
         // split
-        byte[] leftSplitKey = split(permutedKey, 'L');
-        byte[] rightSplitKey = split(permutedKey, 'R');
+        byte[] leftSplitKey = split(permutedKey, 'l');
+        byte[] rightSplitKey = split(permutedKey, 'r');
 
         // shift left
         leftSplitKey = shiftLeft(leftSplitKey);
         // shift right key
         rightSplitKey = shiftLeft(rightSplitKey);
+
         // combine then permute.... All in one line. Got Lazy
         storedKeys[0] = permute(10, 8, combine(leftSplitKey, rightSplitKey), keyCompressionPBoxTable );
 
+        // round 2
         // shift left
         leftSplitKey = shiftLeft(shiftLeft(leftSplitKey) );
         // shift right key
@@ -278,13 +278,16 @@ public class SDES {
 
     static void keyGeneratorTestCase() {
 
-        byte[] testCipherKey = {0, 1, 1, 0, 0, 1, 1, 0, 0, 1};
+        // byte[] testCipherKey = {0, 1, 1, 0, 0, 1, 1, 0, 0, 1};
+        byte[] testCipherKey = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 
+        // straight PBox
         byte[] straightPBox = permute(10, 10, testCipherKey, keyStraightPBoxTable);
 
         System.out.println("\nStraight P Box: ");
         print(straightPBox);
 
+        // split
         byte[] leftKey = split(straightPBox, 'l');
         byte[] rightKey = split(straightPBox, 'r');
 
@@ -314,13 +317,16 @@ public class SDES {
         print(roundOneKey);
 
         // second shift
-        leftKey = shiftLeft(shiftLeft(leftKey) );
-        rightKey = shiftLeft(shiftLeft(rightKey) );
+        byte[] leftKeySplitTwice = shiftLeft(shiftLeft(leftKey) );
+        byte[] rightKeySplitTwice = shiftLeft(shiftLeft(rightKey) );
 
         System.out.println("\nLeft 5 key shifted twice!: ");
-        print(leftKey);
+        print(leftKeySplitTwice);
         System.out.println("\nRight 5 key shifted twice!: ");
-        print(rightKey);
+        print(rightKeySplitTwice);
+
+        // forgot to combine
+        combinedKey = combine(leftKeySplitTwice, rightKeySplitTwice);
 
         // second compression
         byte[] roundTwoKey = permute(10, 8, combinedKey, keyCompressionPBoxTable);
