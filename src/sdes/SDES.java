@@ -152,6 +152,7 @@ public class SDES {
         return combined;
     }
 
+    // for printing byte[] array
     static void print(byte[] arr) {
         for(int i = 0; i < arr.length; i++ ) {
             System.out.print(arr[i] );
@@ -337,12 +338,37 @@ public class SDES {
 
     static void cipherKeyGenTestCase() {
 
-        // this test is from the book - TABLE O.2 pg. 666
-        byte[] ciph = {1, 0, 1, 1, 1, 0, 0, 1, 1, 0};
-        byte[][] newCiph = keyGenerator(ciph, 2);
+        // this test is from the book - TABLE O.1 pg. 664
+        byte[] ciphCase1 = {1, 0, 1, 1, 1, 0, 0, 1, 1, 0};
+        byte[] ciphCase2 = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+        byte[] ciphCase3 = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+        byte[][] newCiph1 = keyGenerator(ciphCase1, 2);
+        byte[][] newCiph2 = keyGenerator(ciphCase2, 2);
+        byte[][] newCiph3 = keyGenerator(ciphCase3, 2);
 
-        print(newCiph[0]);
-        print(newCiph[1]);
+        System.out.println("\n** Case 1 ** ");
+        System.out.println("Original Key cipher");
+        print(ciphCase1);
+        System.out.println("Round 1 Key");
+        print(newCiph1[0]);
+        System.out.println("Round 2 Key");
+        print(newCiph1[1]);
+
+        System.out.println("\n** Case 2 ** ");
+        System.out.println("Original Key cipher");
+        print(ciphCase2);
+        System.out.println("Round 1 Key");
+        print(newCiph2[0]);
+        System.out.println("Round 2 Key");
+        print(newCiph2[1]);
+
+        System.out.println("\n** Case 3 ** ");
+        System.out.println("Original Key cipher");
+        print(ciphCase3);
+        System.out.println("Round 1 Key");
+        print(newCiph3[0]);
+        System.out.println("Round 2 Key");
+        print(newCiph3[1]);
     }
 
     static void combineTestCase() {
