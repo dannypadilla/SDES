@@ -23,11 +23,11 @@ public class SDES {
 
     // tables for Key Generation
     static byte[] keyStraightPBoxTable = {2, 4, 1, 6, 3, 9, 0, 8, 7, 5}; // straight pbox table for the key generator
-    static byte[] compressionPBoxTable = {5, 2, 6, 3, 7, 4, 9, 8}; // compression pbox table for key generator
+    static byte[] keyCompressionPBoxTable = {5, 2, 6, 3, 7, 4, 9, 8}; // compression pbox table for key generator
 
     public static void main(String[] args) {
 
-        
+        keyGeneratorTestCase();
 
     }
 
@@ -103,8 +103,36 @@ public class SDES {
         return shiftedLeftOne;
     }
 
-    // tests used for proving permutation works and outputs properly.
-    // handles initial permutation and expansion permutation
+    static byte[] combine(byte[] left, byte[] right) {
+
+        int totalLength = left.length + right.length;
+
+        byte[] combined = new byte[totalLength];
+
+        int index = 0;
+
+        for(; index < left.length; index++ ) {
+            combined[index] = left[index];
+        }
+
+        for(int i = 0; index < totalLength; index++, i++ ) {
+            combined[index] = right[i];
+        }
+
+        return combined;
+    }
+
+    static void print(byte[] arr) {
+        for(int i = 0; i < arr.length; i++ ) {
+            System.out.print(arr[i] );
+        }
+        System.out.println();
+    }
+
+
+    /* Testing */
+
+    // handles initial permutation, expansion, and compression permutation
     static void permuteTestCase() {
 
         // original test block
@@ -117,6 +145,7 @@ public class SDES {
         byte[] initialPBox = permute(8, 8, plainTextBlock, initialPBoxTable);
 
         // testing to see if original permutations are equal
+        System.out.println("** Initial Permutation test **");
         System.out.println("Original Test block: ");
         for(int i = 0; i < plainTextBlock.length; i++) {
             System.out.print(plainTextBlock[i] );
@@ -137,6 +166,7 @@ public class SDES {
         // use expansion permutation table: 4 bits to 8 bits
         byte[] expansion = permute(4, 8, expansionTest, expansionPermutationTable);
 
+        System.out.println("** Expansion Test **");
         System.out.println("\n\nOriginal test sample to run expansion test: ");
         for(int i = 0; i < expansion.length; i++ ) {
             System.out.print(expansion[i] );
@@ -146,6 +176,25 @@ public class SDES {
         for(int i = 0; i < expansion.length; i++ ) {
             System.out.print(expansion[i] );
         }
+        System.out.println("\n");
+
+        // compression pbox test
+
+        byte[] compressionTest = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+
+        byte[] compressed = permute(10, 8, compressionTest, keyCompressionPBoxTable);
+
+        System.out.println("Compression PBox Test");
+        System.out.println("Initial set");
+        for(int i = 0; i < compressionTest.length; i++ ) {
+            System.out.print(compressionTest[i] );
+        }
+
+        System.out.println("\n\nAfter running compression permutation: ");
+        for(int i = 0; i < compressed.length; i++ ) {
+            System.out.print(compressed[i] );
+        }
+        System.out.println();
 
     }
 
@@ -194,6 +243,76 @@ public class SDES {
         for(int i = 0; i < splitRight.length; i++) {
             System.out.print(splitRight[i] );
         }
+
+    }
+
+    static void keyGeneratorTestCase() {
+
+        byte[] testCipherKey = {0, 1, 1, 0, 0, 1, 1, 0, 0, 1};
+
+        byte[] straightPBox = permute(10, 10, testCipherKey, keyStraightPBoxTable);
+
+        System.out.println("\nStraight P Box: ");
+        print(straightPBox);
+
+        byte[] leftKey = split(straightPBox, 'l');
+        byte[] rightKey = split(straightPBox, 'r');
+
+        System.out.println("\n5 Left keys: ");
+        print(leftKey);
+        System.out.println("\n5 Right keys: ");
+        print(rightKey);
+
+        // first shift
+        leftKey = shiftLeft(leftKey);
+        rightKey = shiftLeft(rightKey);
+
+        System.out.println("\nLeft 5 key shifted: ");
+        print(leftKey);
+        System.out.println("\nRight 5 key shifted: ");
+        print(rightKey);
+
+        // combine
+        byte[] combinedKey = combine(leftKey, rightKey);
+
+        System.out.println("\nCombined Key: ");
+        print(combinedKey);
+
+        // first compression
+        byte[] roundOneKey = permute(10, 8, combinedKey, keyCompressionPBoxTable);
+        System.out.println("\n** Round One Key ** ");
+        print(roundOneKey);
+
+        // second shift
+        leftKey = shiftLeft(shiftLeft(leftKey) );
+        rightKey = shiftLeft(shiftLeft(rightKey) );
+
+        System.out.println("\nLeft 5 key shifted twice!: ");
+        print(leftKey);
+        System.out.println("\nRight 5 key shifted twice!: ");
+        print(rightKey);
+
+        // second compression
+        byte[] roundTwoKey = permute(10, 8, combinedKey, keyCompressionPBoxTable);
+        System.out.println("\n** Round Two Key ** ");
+        print(roundTwoKey);
+
+    }
+
+    static void combineTestCase() {
+        byte[] test1 = {0, 1, 1, 0, 1};
+        byte[] test2 = {0, 0, 0, 1, 1};
+
+        byte[] sample = combine(test1, test2);
+
+        System.out.println("\nLeft array: ");
+        print(test1);
+
+        System.out.println("\nRight array:");
+        print(test2);
+
+        System.out.println("\nCombined array:");
+        print(sample);
 
     }
 }
