@@ -27,7 +27,9 @@ public class SDES {
 
     public static void main(String[] args) {
 
-        keyGeneratorTestCase();
+        byte[] test = sBox2Table[1];
+        print(test);
+        System.out.println(sBox2Table[1][2] );
 
     }
 
@@ -87,12 +89,40 @@ public class SDES {
 
     void swapper() {}
 
-    void desDunction() {}
+    void desFunction() {}
 
     void substitute() {}
 
     /* Key-Generator */
-    void keyGenerator() {}
+    static byte[][] keyGenerator(byte[] cipherKey, int rounds) {
+
+        int outputKeyLength = 8; // only for SDES
+
+        byte[][] storedKeys = new byte[rounds][outputKeyLength];
+
+        // permute
+        byte[] permutedKey = permute(10, 10, cipherKey, keyStraightPBoxTable);
+        // split
+        byte[] leftSplitKey = split(permutedKey, 'L');
+        byte[] rightSplitKey = split(permutedKey, 'R');
+
+        // shift left
+        leftSplitKey = shiftLeft(leftSplitKey);
+        // shift right key
+        rightSplitKey = shiftLeft(rightSplitKey);
+        // combine then permute.... All in one line. Got Lazy
+        storedKeys[0] = permute(10, 8, combine(leftSplitKey, rightSplitKey), keyCompressionPBoxTable );
+
+        // shift left
+        leftSplitKey = shiftLeft(shiftLeft(leftSplitKey) );
+        // shift right key
+        rightSplitKey = shiftLeft(shiftLeft(rightSplitKey) );
+
+        storedKeys[1] = permute(10, 8, combine(leftSplitKey, rightSplitKey), keyCompressionPBoxTable );
+
+        return storedKeys;
+
+    }
 
     static byte[] shiftLeft(byte[] plainText) {
         byte[] shiftedLeftOne = new byte[plainText.length];
