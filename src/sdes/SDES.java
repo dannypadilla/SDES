@@ -27,7 +27,7 @@ public class SDES {
 
     public static void main(String[] args) {
 
-        
+        sboxTestCase();
 
     }
 
@@ -35,16 +35,31 @@ public class SDES {
 
         byte[] plainText = new byte[plainTextBlock.length];
 
-        // permute
+        /* initial permute */
         plainText = permute(8, 8, plainTextBlock, initialPBoxTable);
 
-        // split
+        /* split */
         byte[] leftSplit = split(plainText, 'l');
         byte[] rightSplit = split(plainText, 'r');
 
-        // mixer
-        // combine
-        // permute again
+        /* mixer (DES Function and XOR) */
+        /* * DES Function */
+        // * expansion pbox 4bits -> 8 bits
+        // * XOR 8bits -> 8bits
+        // * Sboxes 8bits
+        // * -split 8bits -> 2 4bits
+        // * -sbox1 4bits -> 2bits
+        // * -sbox2 4bits -> 2bits
+        // * -combine 2 2bits -> 4bits
+        // * straight pbox 4bits -> 4bits
+
+        // Left XOR DES (Right) 4bits -> 4bits
+
+
+
+
+        /* combine (XOR) */
+        /* final permute again */
 
     }
 
@@ -70,13 +85,12 @@ public class SDES {
 
         //inserted code
         int counter = indexLength;
-        if(leftOrRight == 'l' || leftOrRight == 'L') {
-            for(int i = 0; i < indexLength; i++){
+        if (leftOrRight == 'l' || leftOrRight == 'L') {
+            for (int i = 0; i < indexLength; i++) {
                 splitPlainText[i] = plainTextBlock[i];
             }
-        }
-        else{
-            for(int i = 0; i < indexLength; i++, counter++){
+        } else {
+            for (int i = 0; i < indexLength; i++, counter++) {
                 splitPlainText[i] = plainTextBlock[counter];
             }
         }
@@ -89,19 +103,41 @@ public class SDES {
 
         byte[] xor = new byte[bits];
 
-        for(int i = 0; i < bits; i++ ) {
-            xor[i] = (byte)(plainText[i] ^ key[i] );
+        for (int i = 0; i < bits; i++) {
+            xor[i] = (byte) (plainText[i] ^ key[i]);
         }
         return xor;
     }
 
-    void mixer() {}
+    static byte[] sbox(byte[] input) {
 
-    void swapper() {}
+        int len = input.length / 2 - 1;
+        byte[] newSBox = new byte[4];
+        byte carry = 0;
 
-    void desFunction() {}
+        byte[] leftSplitBits = split(input, 'l');
+        byte[] rightSplitBits = split(input, 'r');
 
-    void substitute() {}
+        for (int i = len; i > 0; i--) {
+            newSBox[i] = sum(leftSplitBits[i], rightSplitBits[i], carry);
+            carry = carryIn(leftSplitBits[i], rightSplitBits[i], carry);
+        }
+
+        return input;
+
+    }
+
+    void mixer() {
+    }
+
+    void swapper() {
+    }
+
+    void desFunction() {
+    }
+
+    void substitute() {
+    }
 
     // key generator
     static byte[][] keyGenerator(byte[] cipherKey, int rounds) {
@@ -122,15 +158,15 @@ public class SDES {
         rightSplitKey = shiftLeft(rightSplitKey);
 
         // combine then permute.... All in one line. Got Lazy
-        storedKeys[0] = permute(10, 8, combine(leftSplitKey, rightSplitKey), keyCompressionPBoxTable );
+        storedKeys[0] = permute(10, 8, combine(leftSplitKey, rightSplitKey), keyCompressionPBoxTable);
 
         // round 2
         // shift left
-        leftSplitKey = shiftLeft(shiftLeft(leftSplitKey) );
+        leftSplitKey = shiftLeft(shiftLeft(leftSplitKey));
         // shift right key
-        rightSplitKey = shiftLeft(shiftLeft(rightSplitKey) );
+        rightSplitKey = shiftLeft(shiftLeft(rightSplitKey));
 
-        storedKeys[1] = permute(10, 8, combine(leftSplitKey, rightSplitKey), keyCompressionPBoxTable );
+        storedKeys[1] = permute(10, 8, combine(leftSplitKey, rightSplitKey), keyCompressionPBoxTable);
 
         return storedKeys;
 
@@ -138,10 +174,10 @@ public class SDES {
 
     static byte[] shiftLeft(byte[] plainText) {
         byte[] shiftedLeftOne = new byte[plainText.length];
-        for(int i = 0; i < shiftedLeftOne.length - 1; i++){
-            shiftedLeftOne[i] = plainText[i+1];
+        for (int i = 0; i < shiftedLeftOne.length - 1; i++) {
+            shiftedLeftOne[i] = plainText[i + 1];
         }
-        shiftedLeftOne[shiftedLeftOne.length-1] = plainText[0];
+        shiftedLeftOne[shiftedLeftOne.length - 1] = plainText[0];
         return shiftedLeftOne;
     }
 
@@ -153,11 +189,11 @@ public class SDES {
 
         int index = 0;
 
-        for(; index < left.length; index++ ) {
+        for (; index < left.length; index++) {
             combined[index] = left[index];
         }
 
-        for(int i = 0; index < totalLength; index++, i++ ) {
+        for (int i = 0; index < totalLength; index++, i++) {
             combined[index] = right[i];
         }
 
@@ -166,8 +202,8 @@ public class SDES {
 
     // for printing byte[] array
     static void print(byte[] arr) {
-        for(int i = 0; i < arr.length; i++ ) {
-            System.out.print(arr[i] );
+        for (int i = 0; i < arr.length; i++) {
+            System.out.print(arr[i]);
         }
         System.out.println();
     }
@@ -190,18 +226,18 @@ public class SDES {
         // testing to see if original permutations are equal
         System.out.println("** Initial Permutation test **");
         System.out.println("Original Test block: ");
-        for(int i = 0; i < plainTextBlock.length; i++) {
-            System.out.print(plainTextBlock[i] );
+        for (int i = 0; i < plainTextBlock.length; i++) {
+            System.out.print(plainTextBlock[i]);
         }
 
         System.out.println("\n\nPermuted by hand to compare if next line is correct:");
-        for(int i = 0; i < permutedPlainTextBlock.length; i++ ) {
+        for (int i = 0; i < permutedPlainTextBlock.length; i++) {
             System.out.print(permutedPlainTextBlock[i]);
         }
 
         System.out.println("\n\nAfter running permuted function. Should equal top permuted line:");
-        for(int i = 0; i < initialPBox.length; i++ ) {
-            System.out.print(initialPBox[i] );
+        for (int i = 0; i < initialPBox.length; i++) {
+            System.out.print(initialPBox[i]);
         }
 
         // test sample for expansion
@@ -211,13 +247,13 @@ public class SDES {
 
         System.out.println("** Expansion Test **");
         System.out.println("\n\nOriginal test sample to run expansion test: ");
-        for(int i = 0; i < expansion.length; i++ ) {
-            System.out.print(expansion[i] );
+        for (int i = 0; i < expansion.length; i++) {
+            System.out.print(expansion[i]);
         }
 
         System.out.println("\n\nAfter running expansion permutation: ");
-        for(int i = 0; i < expansion.length; i++ ) {
-            System.out.print(expansion[i] );
+        for (int i = 0; i < expansion.length; i++) {
+            System.out.print(expansion[i]);
         }
         System.out.println("\n");
 
@@ -229,13 +265,13 @@ public class SDES {
 
         System.out.println("Compression PBox Test");
         System.out.println("Initial set");
-        for(int i = 0; i < compressionTest.length; i++ ) {
-            System.out.print(compressionTest[i] );
+        for (int i = 0; i < compressionTest.length; i++) {
+            System.out.print(compressionTest[i]);
         }
 
         System.out.println("\n\nAfter running compression permutation: ");
-        for(int i = 0; i < compressed.length; i++ ) {
-            System.out.print(compressed[i] );
+        for (int i = 0; i < compressed.length; i++) {
+            System.out.print(compressed[i]);
         }
         System.out.println();
 
@@ -250,18 +286,18 @@ public class SDES {
         byte[] twoShifts = shiftLeft(oneShift);
 
         System.out.println("No shifts");
-        for(int i = 0; i < testPlainText.length; i++) {
-            System.out.print(testPlainText[i] );
+        for (int i = 0; i < testPlainText.length; i++) {
+            System.out.print(testPlainText[i]);
         }
 
         System.out.println("\nOne shift");
-        for(int i = 0; i < oneShift.length; i++) {
-            System.out.print(oneShift[i] );
+        for (int i = 0; i < oneShift.length; i++) {
+            System.out.print(oneShift[i]);
         }
 
         System.out.println("\nTwo shifts");
-        for(int i = 0; i < twoShifts.length; i++) {
-            System.out.print(twoShifts[i] );
+        for (int i = 0; i < twoShifts.length; i++) {
+            System.out.print(twoShifts[i]);
         }
     }
 
@@ -273,18 +309,18 @@ public class SDES {
         byte[] splitRight = split(testPlainText, 'r');
 
         System.out.println("Original Plain Te");
-        for(int i = 0; i < testPlainText.length; i++) {
-            System.out.print(testPlainText[i] );
+        for (int i = 0; i < testPlainText.length; i++) {
+            System.out.print(testPlainText[i]);
         }
 
         System.out.println("\nLeft Split");
-        for(int i = 0; i < splitLeft.length; i++) {
-            System.out.print(splitLeft[i] );
+        for (int i = 0; i < splitLeft.length; i++) {
+            System.out.print(splitLeft[i]);
         }
 
         System.out.println("\nRight Split");
-        for(int i = 0; i < splitRight.length; i++) {
-            System.out.print(splitRight[i] );
+        for (int i = 0; i < splitRight.length; i++) {
+            System.out.print(splitRight[i]);
         }
 
     }
@@ -330,8 +366,8 @@ public class SDES {
         print(roundOneKey);
 
         // second shift
-        byte[] leftKeySplitTwice = shiftLeft(shiftLeft(leftKey) );
-        byte[] rightKeySplitTwice = shiftLeft(shiftLeft(rightKey) );
+        byte[] leftKeySplitTwice = shiftLeft(shiftLeft(leftKey));
+        byte[] rightKeySplitTwice = shiftLeft(shiftLeft(rightKey));
 
         System.out.println("\nLeft 5 key shifted twice!: ");
         print(leftKeySplitTwice);
@@ -425,4 +461,42 @@ public class SDES {
         print(xor);
 
     }
+
+    static void sboxTestCase() {
+
+        byte[] test = {0, 1, 1, 0, 1, 1, 1, 0};
+
+        byte[] leftSplitSbox1 = split(test, 'l');
+
+        byte[] rightSplitSbox2 = split(test, 'r');
+
+        System.out.println("8 bit split into 2; left and right");
+        print(leftSplitSbox1);
+        print(rightSplitSbox2);
+
+        byte[] sBox1Row = {leftSplitSbox1[0], leftSplitSbox1[3] };
+        byte[] sBox1Column= {leftSplitSbox1[1], leftSplitSbox1[2] };
+
+        byte[] newSBox1 = new byte[2];
+        byte[] newSBox2 = new byte[2];
+        byte carry = 0;
+        int len = test.length / 2 - 1;
+
+        for (int i = len; i > 0; i--) {
+            newSBox1[i] = sum(sBox1Row[i], sBox1Column[i], carry);
+
+            //newSBox2[i] = sum(sBox1Row[i], m[i], carry);
+            carry = carryIn(sBox1Row[i], sBox1Column[i], carry);
+        }
+
+    }
+
+    static byte sum(byte a, byte b, byte carry) {
+        return (byte) (a ^ b ^ carry);
+    }
+
+    static byte carryIn(byte a, byte b, byte carry) {
+        return (byte) ((a | b) & (a | carry) & (b | carry));
+    }
+
 }
