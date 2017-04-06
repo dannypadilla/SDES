@@ -1,6 +1,8 @@
 package sdes;
 
 
+import com.sun.deploy.util.SystemUtils;
+
 public class SDES {
 
     static byte[] initialPBoxTable = {1, 5, 2, 0, 3, 7, 4, 6}; // initial-permutation table
@@ -28,7 +30,11 @@ public class SDES {
 
     public static void main(String[] args) {
 
-        sboxTestCase();
+        byte[] test = {0, 1, 0, 1};
+
+        byte[] s = sbox(test, sBox1Table);
+
+        print(s);
 
 //        String test = "1011011001111001001011101111110000111110100000000001110111010001111011111101101100010011000000101101011010101000101111100011101011010111100011101001010111101100101110000010010101110001110111011111010101010100001100011000011010101111011111010011110111001001011100101101001000011011111011000010010001011101100011011110000000110010111111010000011100011111111000010111010100001100001010011001010101010000110101101111111010010110001001000001111000000011110000011110110010010101010100001000011010000100011010101100000010111000000010101110100001000111010010010101110111010010111100011111010101111011101111000101001010001101100101100111001110111001100101100011111001100000110100001001100010000100011100000000001001010011101011100101000111011100010001111101011111100000010111110101010000000100110110111111000000111110111010100110000010110000111010001111000101011111101011101101010010100010111100011100000001010101110111111101101100101010011100111011110101011011";
 //        char[] tester = test.toCharArray();
@@ -118,21 +124,45 @@ public class SDES {
         return xor;
     }
 
-    static byte[] sbox(byte[] input) {
+    static byte[] sbox(byte[] input, byte[][] sBoxTable) {
 
-        int len = input.length / 2 - 1;
-        byte[] newSBox = new byte[4];
-        byte carry = 0;
+        // take row and column values
+        byte[] sBox1Row = {input[0], input[3] };
+        byte[] sBox1Column= {input[1], input[2] };
 
-        byte[] leftSplitBits = split(input, 'l');
-        byte[] rightSplitBits = split(input, 'r');
+        // byte[] array to a string for easier processing
+        String rowString = "";
+        String columnString = "";
+        // append row string
+        for(int i = 0; i < 2; i++) {
+            rowString += sBox1Row[i];
+        }
+        // append to column string
+        for(int i = 0; i < 2; i++) {
+            columnString += sBox1Column[i];
+        }
+        // convert string binary to int
+        int row = Integer.parseInt(rowString, 2);
+        int column = Integer.parseInt(columnString, 2);
 
-        for (int i = len; i > 0; i--) {
-            newSBox[i] = sum(leftSplitBits[i], rightSplitBits[i], carry);
-            carry = carryIn(leftSplitBits[i], rightSplitBits[i], carry);
+        // look up sbox table for bit value to return
+        int sBoxResult = sBoxTable[row][column];
+
+        // convert int to binary
+        String sBoxStringResult = Integer.toBinaryString(sBoxResult);
+
+        byte[] result = {0, 0};
+
+        for(int i = 0; i < 2; i++) {
+            if (sBoxStringResult.length() == 1) {
+                result[i + 1] = (byte)(sBoxStringResult.charAt(i) - 48);
+                break;
+            } else {
+                result[i] = (byte)(sBoxStringResult.charAt(i) - 48);
+            }
         }
 
-        return input;
+        return result;
 
     }
 
@@ -207,6 +237,23 @@ public class SDES {
         }
 
         return combined;
+    }
+
+    // don't use this chet
+    static byte[] addBinary(byte[] input) {
+        int len = input.length / 2 - 1;
+        byte[] newSBox = new byte[4];
+        byte carry = 0;
+
+        byte[] leftSplitBits = split(input, 'l');
+        byte[] rightSplitBits = split(input, 'r');
+
+        for (int i = len; i > 0; i--) {
+            newSBox[i] = sum(leftSplitBits[i], rightSplitBits[i], carry);
+            carry = carryIn(leftSplitBits[i], rightSplitBits[i], carry);
+        }
+
+        return input;
     }
 
     // for printing byte[] array
@@ -486,17 +533,30 @@ public class SDES {
         byte[] sBox1Row = {leftSplitSbox1[0], leftSplitSbox1[3] };
         byte[] sBox1Column= {leftSplitSbox1[1], leftSplitSbox1[2] };
 
-        byte[] newSBox1 = new byte[2];
-        byte[] newSBox2 = new byte[2];
-        byte carry = 0;
-        int len = test.length / 2 - 1;
+        System.out.println("Left Split SBox 1: Row, Column: ");
+        print(sBox1Row);
+        print(sBox1Column);
 
-        for (int i = len; i > 0; i--) {
-            newSBox1[i] = sum(sBox1Row[i], sBox1Column[i], carry);
+        String rowString = "";
+        String columnString = "";
 
-            //newSBox2[i] = sum(sBox1Row[i], m[i], carry);
-            carry = carryIn(sBox1Row[i], sBox1Column[i], carry);
+        for(int i = 0; i < 2; i++) {
+            rowString += sBox1Row[i];
         }
+
+        for(int i = 0; i < 2; i++) {
+            columnString += sBox1Column[i];
+        }
+
+        int row = Integer.parseInt(rowString, 2);
+        int column = Integer.parseInt(columnString, 2);
+
+        int sBox1Result = sBox1Table[row][column];
+        String sBox1Test = Integer.toBinaryString(sBox1Table[row][column]);
+
+        System.out.println("wat");
+        System.out.println(sBox1Result);
+        System.out.println(sBox1Test);
 
     }
 

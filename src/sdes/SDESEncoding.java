@@ -1,4 +1,5 @@
 package sdes;
+import com.sun.deploy.util.SystemUtils;
 import sdes.CASCII;
 
 
@@ -17,13 +18,9 @@ public class SDESEncoding {
         CASCII test;
         test = new CASCII();
 
-//        char[] testArray = {'H', 'E', 'L', 'L', 'O', 'Z'};
-//
-//        byte[] testByte = test.Convert(testArray);
-//        for (int i = 0; i < testByte.length; i++) {
-//            System.out.println(testByte[i]);
-//        }
+        char[] testArray = {'H', 'E', 'L', 'L', 'O', 'Z'};
 
+<<<<<<< HEAD
         int l = 0;
         for(int counter = 31; counter != 0; counter--) {
             l = (int)Math.floor(Math.random()*(31-0) + 0);
@@ -31,10 +28,40 @@ public class SDESEncoding {
             System.out.println(l);
             for (int i = 0; i < holder.length; i++) {
                 System.out.print(holder[i] + " ");
+=======
+        byte[] testByte = test.Convert(testArray);
+
+        for(int i = 0; i < testByte.length; i++){
+            for(int j = 0; j < test.convert(testByte[i]).length; j++){
+                System.out.print(test.convert(testByte[i])[j]);
+>>>>>>> 6f3f96ed466964fc5cf9bff4ad5dd57dbfd276db
             }
             System.out.println();
         }
 
+<<<<<<< HEAD
+=======
+
+
+//        byte[] fiveBitsFromTxtFile = {1, 1, 1, 1, 1};
+//
+//        String fiveBitString = "";
+//
+//        for(int i = 0; i < fiveBitsFromTxtFile.length; i++) {
+//            fiveBitString += fiveBitsFromTxtFile[i];
+//        }
+//
+//        int fiveBitsToInt = Integer.parseInt(fiveBitString, 2);
+//
+//        System.out.println(fiveBitsToInt);
+//
+//        byte[] holder = test.convert(fiveBitsToInt);
+//        for(int i = 0; i < holder.length; i++){
+//            System.out.print(holder[i] + " ");
+//        }
+
+
+>>>>>>> 6f3f96ed466964fc5cf9bff4ad5dd57dbfd276db
 //        String temp = test.toString(testByte);
 //
 //        byte[] holder = test.Convert(temp);
