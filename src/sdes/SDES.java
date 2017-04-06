@@ -3,6 +3,28 @@ package sdes;
 
 public class SDES {
 
+    public static void main(String[] args) {
+
+        byte[] pt = {1, 1, 1, 1, 0, 0, 1, 0};
+        byte[] key = {1, 0, 1, 1, 1, 0, 0, 1, 1, 0};
+
+        byte[][] keyGenerator = keyGenerator(key, 2);
+
+        Encryption(key, pt);
+
+        // SDESImplementationTest();
+
+//        String test = "1011011001111001001011101111110000111110100000000001110111010001111011111101101100010011000000101101011010101000101111100011101011010111100011101001010111101100101110000010010101110001110111011111010101010100001100011000011010101111011111010011110111001001011100101101001000011011111011000010010001011101100011011110000000110010111111010000011100011111111000010111010100001100001010011001010101010000110101101111111010010110001001000001111000000011110000011110110010010101010100001000011010000100011010101100000010111000000010101110100001000111010010010101110111010010111100011111010101111011101111000101001010001101100101100111001110111001100101100011111001100000110100001001100010000100011100000000001001010011101011100101000111011100010001111101011111100000010111110101010000000100110110111111000000111110111010100110000010110000111010001111000101011111101011101101010010100010111100011100000001010101110111111101101100101010011100111011110101011011";
+//        char[] tester = test.toCharArray();
+//        for(int i = 0; i < tester.length; i++){
+//            System.out.println(tester[i]);
+//        }
+//        System.out.println(tester.length);
+
+
+    }
+
+    // static variables (tables)
     static byte[] initialPBoxTable = {1, 5, 2, 0, 3, 7, 4, 6}; // initial-permutation table
     static byte[] finalPBoxTable = {3, 0, 2, 4, 6, 1, 7, 5}; // final-permutation table
 
@@ -26,46 +48,7 @@ public class SDES {
     static byte[] keyStraightPBoxTable = {2, 4, 1, 6, 3, 9, 0, 8, 7, 5}; // straight pbox table for the key generator
     static byte[] keyCompressionPBoxTable = {5, 2, 6, 3, 7, 4, 9, 8}; // compression pbox table for key generator
 
-    public static void main(String[] args) {
-
-        byte[][] testPlaintText = {
-                {1, 0, 1, 0, 1, 0, 1, 0},
-                {1, 0, 1, 0, 1, 0, 1, 0},
-                {0, 1, 0, 1, 0, 1, 0, 1},
-                {1, 0, 1, 0, 1, 0, 1, 0}
-        };
-
-        // 8 bit cipher text
-        byte[][] testCipherText = {
-                {0, 0, 0, 1, 0, 0, 0, 1},
-                {1, 1, 0, 0, 1, 0, 1, 0},
-                {0, 1, 1, 1, 0, 0, 0, 0},
-                {0, 0, 0, 0, 0, 1, 0, 0}
-        };
-
-        // 10 bit key
-        byte[][] testRawKeys = {
-                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                {1, 1, 1, 0, 0, 0, 1, 1, 1, 0},
-                {1, 1, 1, 0, 0, 0, 1, 1, 1, 0},
-                {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
-        };
-
-        for(int i = 0; i < 4; i++) {
-            print(Encryption(testRawKeys[i], testPlaintText[i]) );
-        }
-
-//        String test = "1011011001111001001011101111110000111110100000000001110111010001111011111101101100010011000000101101011010101000101111100011101011010111100011101001010111101100101110000010010101110001110111011111010101010100001100011000011010101111011111010011110111001001011100101101001000011011111011000010010001011101100011011110000000110010111111010000011100011111111000010111010100001100001010011001010101010000110101101111111010010110001001000001111000000011110000011110110010010101010100001000011010000100011010101100000010111000000010101110100001000111010010010101110111010010111100011111010101111011101111000101001010001101100101100111001110111001100101100011111001100000110100001001100010000100011100000000001001010011101011100101000111011100010001111101011111100000010111110101010000000100110110111111000000111110111010100110000010110000111010001111000101011111101011101101010010100010111100011100000001010101110111111101101100101010011100111011110101011011";
-//        char[] tester = test.toCharArray();
-//        for(int i = 0; i < tester.length; i++){
-//            System.out.println(tester[i]);
-//        }
-//        System.out.println(tester.length);
-
-
-    }
-
-    public static byte[] Encryption(byte[] rawkey, byte[] plaintext) {
+    public static byte[] Cipher(byte[] rawkey, byte[] plaintext) {
 
         int length = plaintext.length;
 
@@ -78,15 +61,17 @@ public class SDES {
         byte[] leftSplit = split(initialPermutation, 'l');
         byte[] rightSplit = split(initialPermutation, 'r');
 
-        /* mixer (DES Function and XOR) */
-        /* * DES Function */
-        // * expansion pbox 4bits -> 8 bits
-        byte[] expansion = permute(4, 8, rightSplit, expansionPermutationTable);
-
         // need to generate keys first
         byte[][] keys = keyGenerator(rawkey, 2);
         byte[] roundOneKey = keys[0];
         byte[] roundTwoKey = keys[1];
+
+        // mixer(right, key)
+
+        /* mixer (DES Function and XOR) */
+        /* * DES Function */
+        // * expansion pbox 4bits -> 8 bits
+        byte[] expansion = permute(4, 8, rightSplit, expansionPermutationTable);
 
         // * XOR 8bits -> 8bits
         byte[] xorWithKey = whitenerXOR(expansion, roundOneKey);
@@ -104,6 +89,8 @@ public class SDES {
 
         // * straight pbox 4bits -> 4bits
         byte[] straightPBox = permute(4, 4, combineSBox, functionStraightPBoxTable);
+
+        /* end of function */
 
         // Left XOR DES (Right) 4bits -> 4bits [mixer]
         byte[] leftSplitXORwithFunction = whitenerXOR(leftSplit, straightPBox);
@@ -146,6 +133,32 @@ public class SDES {
         cipherText = permute(8,8, combine(leftSplitXORwithFunctionRoundTwo, rightSplitForRoundTwo), finalPBoxTable);
 
         return cipherText;
+
+    }
+
+    public static void Encryption(byte[] key, byte[] plaintext) {
+
+        byte[] cipheredText = new byte[8];
+
+        System.out.println("* Initial Permutation");
+        byte[] initialPerm = permute(8, 8, plaintext, initialPBoxTable);
+        print(initialPerm);
+
+        System.out.println("* Split left (L0) and right (R0)");
+        byte[] leftSplit = split(initialPerm, 'l');
+        byte[] rightSplit = split(initialPerm, 'r');
+        print(leftSplit);
+        print(rightSplit);
+
+        System.out.println("* * Round 1 * *");
+        System.out.println("* Mixer *");
+        byte[] mixer = mixer(leftSplit, rightSplit, key);
+        print(mixer);
+        System.out.println("* Swapper *");
+        byte[] swapper = combine(rightSplit, mixer); // and combine
+        System.out.println("* * End Round 1 * *");
+        byte[] finalPermutation = permute(8, 8, swapper, finalPBoxTable);
+
 
     }
 
@@ -225,7 +238,7 @@ public class SDES {
         byte[] result = {0, 0};
 
         for(int i = 0; i < 2; i++) {
-            if (sBoxStringResult.length() == 1) {
+            if (sBoxStringResult.length() == 1 ) {
                 result[i + 1] = (byte)(sBoxStringResult.charAt(i) - 48);
                 break;
             } else {
@@ -237,13 +250,54 @@ public class SDES {
 
     }
 
-    void mixer() {
+    static byte sum(byte a, byte b, byte carry) {
+        return (byte) (a ^ b ^ carry);
+    }
+
+    static byte carryIn(byte a, byte b, byte carry) {
+        return (byte) ((a | b) & (a | carry) & (b | carry));
+    }
+
+
+    static byte[] mixer(byte[] left, byte[] right, byte[] key) {
+
+        // function returns 4 bits
+        byte[] funcResult = desFunction(right, key);
+
+        // xor with function result
+        return whitenerXOR(left, funcResult);
+
     }
 
     void swapper() {
+
     }
 
-    void desFunction() {
+    static byte[] desFunction(byte[] rightPlainText, byte[] key) {
+
+        /* * DES Function */
+        // * expansion pbox 4bits -> 8 bits
+        byte[] expansion = permute(4, 8, rightPlainText, expansionPermutationTable);
+
+        // * XOR 8bits -> 8bits
+        byte[] xorWithKey = whitenerXOR(expansion, key);
+
+        // * Sboxes 8bits
+        // * -split 8bits -> 2 4bits
+        byte[] leftSBoxSplit = split(xorWithKey, 'l');
+        byte[] rightSBoxSplit = split(xorWithKey, 'r');
+        // * -sbox1 4bits -> 2bits & -sbox2 4bits -> 2bits
+        byte[] sBoxOne = sbox(leftSBoxSplit, sBox1Table);
+        byte[] sBoxTwo = sbox(rightSBoxSplit, sBox2Table);
+
+        // * -combine 2 2bits -> 4bits
+        byte[] combinedSBox = combine(sBoxOne, sBoxTwo);
+
+        // * straight pbox 4bits -> 4bits
+        byte[] straightPBox = permute(4, 4, combinedSBox, functionStraightPBoxTable);
+        // returns 4-bits
+        return straightPBox;
+
     }
 
     void substitute() {
@@ -256,7 +310,7 @@ public class SDES {
 
         byte[][] storedKeys = new byte[rounds][outputKeyLength];
 
-        // permute straight P box
+        // permute key straight P box
         byte[] permutedKey = permute(10, 10, cipherKey, keyStraightPBoxTable);
         // split
         byte[] leftSplitKey = split(permutedKey, 'l');
@@ -267,7 +321,7 @@ public class SDES {
         // shift right key
         byte[] rightKeyShift = shiftLeft(rightSplitKey);
 
-        //combine
+        // first combine
         byte[] combine = combine(leftKeyShift, rightKeyShift);
 
         // combine then permute.... All in one line. Got Lazy
@@ -275,11 +329,13 @@ public class SDES {
 
         // round 2
         // shift left
-        leftSplitKey = shiftLeft(shiftLeft(leftSplitKey));
+        leftSplitKey = shiftLeft(shiftLeft(leftKeyShift) );
         // shift right key
-        rightSplitKey = shiftLeft(shiftLeft(rightSplitKey));
+        rightSplitKey = shiftLeft(shiftLeft(rightKeyShift) );
 
-        storedKeys[1] = permute(10, 8, combine(leftSplitKey, rightSplitKey), keyCompressionPBoxTable);
+        // second combine
+        combine = combine(leftSplitKey, rightSplitKey);
+        storedKeys[1] = permute(10, 8, combine, keyCompressionPBoxTable);
 
         return storedKeys;
 
@@ -340,6 +396,38 @@ public class SDES {
 
 
     /* *********** Testing *********** */
+
+    // To verify the implementation of SDES is correct
+    static void SDESImplementationTest() {
+
+        byte[][] testPlaintText = {
+                {1, 0, 1, 0, 1, 0, 1, 0},
+                {1, 0, 1, 0, 1, 0, 1, 0},
+                {0, 1, 0, 1, 0, 1, 0, 1},
+                {1, 0, 1, 0, 1, 0, 1, 0}
+        };
+
+        // 8 bit cipher text
+        byte[][] testCipherText = {
+                {0, 0, 0, 1, 0, 0, 0, 1},
+                {1, 1, 0, 0, 1, 0, 1, 0},
+                {0, 1, 1, 1, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 1, 0, 0}
+        };
+
+        // 10 bit key
+        byte[][] testRawKeys = {
+                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                {1, 1, 1, 0, 0, 0, 1, 1, 1, 0},
+                {1, 1, 1, 0, 0, 0, 1, 1, 1, 0},
+                {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
+        };
+
+        System.out.println("Plaintext to Ciphertext Test Cases");
+        for(int i = 0; i < 4; i++) {
+            print(Cipher(testRawKeys[i], testPlaintText[i]) );
+        }
+    }
 
     // handles initial permutation, expansion, and compression permutation
     static void permuteTestCase() {
@@ -549,6 +637,7 @@ public class SDES {
         print(newCiph3[1]);
     }
 
+    // confimed
     static void combineTestCase() {
         byte[] test1 = {0, 1, 1, 0, 1};
         byte[] test2 = {0, 0, 0, 1, 1};
@@ -557,12 +646,19 @@ public class SDES {
 
         System.out.println("\nLeft array: ");
         print(test1);
+        System.out.println("\nLeft length (s/b 5): ");
+        System.out.println(test1.length);
 
         System.out.println("\nRight array:");
         print(test2);
+        System.out.println("\nRight length (s/b 5): ");
+        System.out.println(test2.length);
 
         System.out.println("\nCombined array:");
         print(sample);
+
+        System.out.println("\nCombined length (s/b 10): ");
+        System.out.println(sample.length);
 
     }
 
@@ -632,14 +728,6 @@ public class SDES {
         System.out.println(sBox1Result);
         System.out.println(sBox1Test);
 
-    }
-
-    static byte sum(byte a, byte b, byte carry) {
-        return (byte) (a ^ b ^ carry);
-    }
-
-    static byte carryIn(byte a, byte b, byte carry) {
-        return (byte) ((a | b) & (a | carry) & (b | carry));
     }
 
 }
