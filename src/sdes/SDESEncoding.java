@@ -24,7 +24,19 @@ public class SDESEncoding {
 //            System.out.println(testByte[i]);
 //        }
 
-        byte[] holder = test.convert(2);
+        byte[] fiveBitsFromTxtFile = {1, 1, 1, 1, 1};
+
+        String fiveBitString = "";
+
+        for(int i = 0; i < fiveBitsFromTxtFile.length; i++) {
+            fiveBitString += fiveBitsFromTxtFile[i];
+        }
+
+        int fiveBitsToInt = Integer.parseInt(fiveBitString, 2);
+
+        System.out.println(fiveBitsToInt);
+
+        byte[] holder = test.convert(fiveBitsToInt);
         for(int i = 0; i < holder.length; i++){
             System.out.print(holder[i] + " ");
         }

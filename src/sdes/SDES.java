@@ -508,14 +508,12 @@ public class SDES {
         int column = Integer.parseInt(columnString, 2);
 
         int sBox1Result = sBox1Table[row][column];
-        String sBox1Test = Integer.toBinaryString(sBox1Table[1][0]);
+        String sBox1Test = Integer.toBinaryString(sBox1Table[row][column]);
 
+        System.out.println("wat");
         System.out.println(sBox1Result);
         System.out.println(sBox1Test);
 
-        String sBoxOutput
-
-        System.out.println(Integer.toBinaryString(sBox1Test) );
     }
 
     static byte sum(byte a, byte b, byte carry) {
