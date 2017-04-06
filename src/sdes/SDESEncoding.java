@@ -24,11 +24,16 @@ public class SDESEncoding {
 //            System.out.println(testByte[i]);
 //        }
 
-        byte[] holder = test.convert(2);
-        for(int i = 0; i < holder.length; i++){
-            System.out.print(holder[i] + " ");
+        int l = 0;
+        for(int counter = 31; counter != 0; counter--) {
+            l = (int)Math.floor(Math.random()*(31-0) + 0);
+            byte[] holder = test.convert(l);
+            System.out.println(l);
+            for (int i = 0; i < holder.length; i++) {
+                System.out.print(holder[i] + " ");
+            }
+            System.out.println();
         }
-
 
 //        String temp = test.toString(testByte);
 //
