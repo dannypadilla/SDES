@@ -17,12 +17,18 @@ public class SDESEncoding {
         CASCII test;
         test = new CASCII();
 
-        char[] testArray = {'H', 'E', 'L', 'L', 'O', 'Z'};
+//        char[] testArray = {'H', 'E', 'L', 'L', 'O', 'Z'};
+//
+//        byte[] testByte = test.Convert(testArray);
+//        for (int i = 0; i < testByte.length; i++) {
+//            System.out.println(testByte[i]);
+//        }
 
-        byte[] testByte = test.Convert(testArray);
-        for (int i = 0; i < testByte.length; i++) {
-            System.out.println(testByte[i]);
+        byte[] holder = test.convert(2);
+        for(int i = 0; i < holder.length; i++){
+            System.out.print(holder[i] + " ");
         }
+
 
 //        String temp = test.toString(testByte);
 //

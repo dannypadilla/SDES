@@ -4,15 +4,6 @@ package sdes;
 // A simplified version of ASCII for encryption and decryption needs
 
 /**
- * <p>Title: CASCII</p>
- * <p>Description: A Compact ASCII data format</p>
- * <p>Copyright: Copyright (c) 2003</p>
- * <p>Company: University of Pennsylvania</p>
- * @author Michael May
- * @version 1.0
- */
-
-/**
  * A class that contains the Compact ASCII representation of text.
  * The total size of the alphabet is 5 bits - 32 total possibilities.
  */
@@ -345,6 +336,186 @@ public class CASCII {
 
         // send back the new byte array
         return new String(output);
+    }
+
+    public static byte [] convert (int number){
+        byte[] conversion = {0,0,0,0,0};
+        switch (number){
+            case 0:
+                return conversion;
+            case 1:
+                conversion[4] = 1;
+                return conversion;
+            case 2:
+                conversion[3] = 1;
+                conversion[4] = 0;
+                return conversion;
+            case 3:
+                //byte[] conversion = {0,0,0,1,1};
+                conversion[3] = 1;
+                conversion[4] = 1;
+                return conversion;
+
+            case 4:
+                //byte[] conversion = {0,0,1,0,0};
+                conversion[2] = 1;
+                return conversion;
+            case 5:
+                //byte[] conversion = {0,0,1,0,1};
+                conversion[2] = 1;
+                conversion[4] = 1;
+                return conversion;
+            case 6:
+                //byte[] conversion = {0,0,1,1,0};
+                conversion[2] = 1;
+                conversion[3] = 1;
+                return conversion;
+            case 7:
+                //byte[] conversion = {0,0,1,1,1};
+                for(int i = 2; i < conversion.length; i++){
+                    conversion[i] = 1;
+                }
+                return conversion;
+            case 8:
+                //byte[] conversion = {0,1,0,0,0};
+                conversion[1] = 1;
+                return conversion;
+            case 9:
+//                byte[] conversion = {0,1,0,0,1};
+                conversion[1] = 1;
+                conversion[4] = 1;
+                return conversion;
+            case 10:
+                //byte[] conversion = {0,1,0,1,0};
+                conversion[1] = 1;
+                conversion[3] = 1;
+                return conversion;
+            case 11:
+//                byte[] conversion = {0,1,0,1,1};
+                conversion[1] = 1;
+                conversion[3] = 1;
+                conversion[4] = 1;
+                return conversion;
+            case 12:
+//                byte[] conversion = {0,1,1,0,0};
+                conversion[2] = 1;
+                conversion[1] = 1;
+                return conversion;
+            case 13:
+//                byte[] conversion = {0,1,1,0,1};
+                conversion[2] = 1;
+                conversion[1] = 1;
+                conversion[4] = 1;
+                return conversion;
+            case 14:
+//                byte[] conversion = {0,1,1,1,0};
+                conversion[1] = 1;
+                conversion[2] = 1;
+                conversion[3] = 1;
+                return conversion;
+            case 15:
+                //byte[] conversion = {0,1,1,1,1};
+                for(int i = 1; i < conversion.length; i++){
+                    conversion[i] = 1;
+                }
+                return conversion;
+            case 16:
+                //byte[] conversion = {1,0,0,0,0};
+                conversion[0] = 1;
+                return conversion;
+            case 17:
+                //byte[] conversion = {1,0,0,0,1};
+                conversion[0] = 1;
+                conversion[4] = 1;
+                return conversion;
+            case 18:
+                //byte [] conversion = {1,0,0,1,0};
+                conversion[0] = 1;
+                conversion[3] = 1;
+                return conversion;
+            case 19:
+                //byte[] conversion = {1,0,0,1,1};
+                conversion[0] = 1;
+                conversion[3] = 1;
+                conversion[4] = 1;
+                return conversion;
+            case 20:
+                //byte [] conversion = {1,0,1,0,0};
+                conversion[0] = 1;
+                conversion[2] = 1;
+                return conversion;
+            case 21:
+                //byte[] conversion = {1,0,1,0,1};
+                conversion[0] = 1;
+                conversion[2] = 1;
+                conversion[4] = 1;
+                return conversion;
+            case 22:
+                //byte[] conversion = {1,0,1,1,0};
+                conversion[0] = 1;
+                conversion[2] = 1;
+                conversion[3] = 1;
+                return conversion;
+            case 23:
+                //byte[] conversion = {1,0,1,1,1};
+                conversion[0] = 1;
+                for(int i = 2; i < conversion.length; i++){
+                    conversion[i] = 1;
+                }
+                return conversion;
+            case 24:
+                //byte[] conversion = {1,1,0,0,0};
+                conversion[0] = 1;
+                conversion[1] = 1;
+                return conversion;
+            case 25:
+                //byte[] conversion = {1,1,0,0,1};
+                conversion[0] = 1;
+                conversion[1] = 1;
+                conversion[4] = 1;
+                return conversion;
+            case 26:
+                //byte[] conversion = {1,1,0,1,0};
+                conversion[0] = 1;
+                conversion[1] = 1;
+                conversion[3] = 1;
+                return conversion;
+            case 27:
+                //byte[] conversion = {1,1,0,1,1};
+                for(int i = 0; i < conversion.length; i++){
+                    conversion[i] = 1;
+                }
+                conversion[2] = 0;
+                return conversion;
+            case 28:
+                //byte[] conversion = {1,1,1,0,0};
+                for(int i = 0; i < 3; i++){
+                    conversion[i] = 1;
+                }
+                return conversion;
+            case 29:
+                //[1,1,1,0,1]
+                for(int i = 0; i < 3; i++){
+                    conversion[i] = 1;
+                }
+                conversion[4] = 1;
+                return conversion;
+            case 30:
+                //[1,1,1,1,0]
+                for(int i = 0; i < conversion.length-1; i++){
+                    conversion[i] = 1;
+                }
+                return conversion;
+            case 31:
+                // [1,1,1,1,1]
+                for(int i = 0; i < conversion.length; i++){
+                    conversion[i] = 1;
+                }
+                return conversion;
+            default:
+                throw new java.lang.IllegalArgumentException("Argument must be be on interval [0, 31]");
+
+        }
     }
 
 
