@@ -12,36 +12,32 @@ public class SDESEncoding {
     //    Give the SDES encoding of the following CASCII plaintext using the key 0111001101. (The answer
 //    is 64 bits long.)
 //    CRYPTOGRAPHY
-    byte [] key =  {0,1,1,1,0,0,1,1,0,1};
+    byte[] key = {0, 1, 1, 1, 0, 0, 1, 1, 0, 1};
 
     public static void main(String[] args) {
-        CASCII test;
-        test = new CASCII();
-
-        char[] testArray = {'H', 'E', 'L', 'L', 'O', 'Z'};
-
-<<<<<<< HEAD
-        int l = 0;
-        for(int counter = 31; counter != 0; counter--) {
-            l = (int)Math.floor(Math.random()*(31-0) + 0);
-            byte[] holder = test.convert(l);
-            System.out.println(l);
-            for (int i = 0; i < holder.length; i++) {
-                System.out.print(holder[i] + " ");
-=======
-        byte[] testByte = test.Convert(testArray);
-
-        for(int i = 0; i < testByte.length; i++){
-            for(int j = 0; j < test.convert(testByte[i]).length; j++){
-                System.out.print(test.convert(testByte[i])[j]);
->>>>>>> 6f3f96ed466964fc5cf9bff4ad5dd57dbfd276db
-            }
-            System.out.println();
-        }
-
-<<<<<<< HEAD
-=======
-
+//        CASCII test;
+//        test = new CASCII();
+//
+//        char[] testArray = {'H', 'E', 'L', 'L', 'O', 'Z'};
+//
+//
+//        int l = 0;
+//        for (int counter = 31; counter != 0; counter--) {
+//            l = (int) Math.floor(Math.random() * (31 - 0) + 0);
+//            byte[] holder = test.convert(l);
+//            System.out.println(l);
+//            for (int i = 0; i < holder.length; i++) {
+//                System.out.print(holder[i] + " ");
+//
+//                byte[] testByte = test.Convert(testArray);
+//
+//                for (int i = 0; i < testByte.length; i++) {
+//                    for (int j = 0; j < test.convert(testByte[i]).length; j++) {
+//                        System.out.print(test.convert(testByte[i])[j]);
+//
+//                    }
+//                    System.out.println();
+//                }
 
 //        byte[] fiveBitsFromTxtFile = {1, 1, 1, 1, 1};
 //
@@ -61,7 +57,6 @@ public class SDESEncoding {
 //        }
 
 
->>>>>>> 6f3f96ed466964fc5cf9bff4ad5dd57dbfd276db
 //        String temp = test.toString(testByte);
 //
 //        byte[] holder = test.Convert(temp);
@@ -71,5 +66,7 @@ public class SDESEncoding {
 //        }
 
 
+            //}
+//        }
     }
 }
