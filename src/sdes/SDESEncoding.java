@@ -1,4 +1,5 @@
 package sdes;
+import com.sun.deploy.util.SystemUtils;
 import sdes.CASCII;
 
 
@@ -17,29 +18,40 @@ public class SDESEncoding {
         CASCII test;
         test = new CASCII();
 
-//        char[] testArray = {'H', 'E', 'L', 'L', 'O', 'Z'};
-//
-//        byte[] testByte = test.Convert(testArray);
+        char[] testArray = {'H', 'E', 'L', 'L', 'O', 'Z'};
+
+        byte[] testByte = test.Convert(testArray);
+
+//        System.out.println(testByte[0]);
+//        System.out.println(test.convert(testByte[0]).length);
+        for(int i = 0; i < testByte.length; i++){
+            for(int j = 0; j < test.convert(testByte[i]).length; j++){
+                System.out.print(test.convert(testByte[i])[j]);
+            }
+            System.out.println();
+        }
+
+
 //        for (int i = 0; i < testByte.length; i++) {
 //            System.out.println(testByte[i]);
 //        }
 
-        byte[] fiveBitsFromTxtFile = {1, 1, 1, 1, 1};
-
-        String fiveBitString = "";
-
-        for(int i = 0; i < fiveBitsFromTxtFile.length; i++) {
-            fiveBitString += fiveBitsFromTxtFile[i];
-        }
-
-        int fiveBitsToInt = Integer.parseInt(fiveBitString, 2);
-
-        System.out.println(fiveBitsToInt);
-
-        byte[] holder = test.convert(fiveBitsToInt);
-        for(int i = 0; i < holder.length; i++){
-            System.out.print(holder[i] + " ");
-        }
+//        byte[] fiveBitsFromTxtFile = {1, 1, 1, 1, 1};
+//
+//        String fiveBitString = "";
+//
+//        for(int i = 0; i < fiveBitsFromTxtFile.length; i++) {
+//            fiveBitString += fiveBitsFromTxtFile[i];
+//        }
+//
+//        int fiveBitsToInt = Integer.parseInt(fiveBitString, 2);
+//
+//        System.out.println(fiveBitsToInt);
+//
+//        byte[] holder = test.convert(fiveBitsToInt);
+//        for(int i = 0; i < holder.length; i++){
+//            System.out.print(holder[i] + " ");
+//        }
 
 
 //        String temp = test.toString(testByte);
