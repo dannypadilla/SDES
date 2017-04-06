@@ -5,14 +5,18 @@ public class SDES {
 
     public static void main(String[] args) {
 
-        byte[] pt = {1, 1, 1, 1, 0, 0, 1, 0};
         byte[] key = {1, 0, 1, 1, 1, 0, 0, 1, 1, 0};
+<<<<<<< HEAD
         byte[] cipher = {0, 0, 0, 0, 0, 1, 0, 0};
+=======
+        byte[] key2 = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+        byte[] pt = {1, 1, 1, 1, 0, 0, 1, 0};
+        byte[] cipher ={0, 0, 0, 0, 0, 1, 0,0};
+>>>>>>> 2ab6a3f94d41cfa663f57f307e9f8aeecc1e89d6
 
-        byte[][] keyGenerator = keyGenerator(key, 2);
+        print(Encryption(key, pt) );
 
-        Encryption(key, pt);
-
+<<<<<<< HEAD
         byte[] decrypt = Decryption(key, cipher);
         System.out.println("test");
         for(int i = 0; i < decrypt.length; i++){
@@ -20,6 +24,10 @@ public class SDES {
         }
 
         // SDESImplementationTest();
+=======
+        print(Decryption(key2, cipher));
+        //SDESImplementationTest();
+>>>>>>> 2ab6a3f94d41cfa663f57f307e9f8aeecc1e89d6
 
 //        String test = "1011011001111001001011101111110000111110100000000001110111010001111011111101101100010011000000101101011010101000101111100011101011010111100011101001010111101100101110000010010101110001110111011111010101010100001100011000011010101111011111010011110111001001011100101101001000011011111011000010010001011101100011011110000000110010111111010000011100011111111000010111010100001100001010011001010101010000110101101111111010010110001001000001111000000011110000011110110010010101010100001000011010000100011010101100000010111000000010101110100001000111010010010101110111010010111100011111010101111011101111000101001010001101100101100111001110111001100101100011111001100000110100001001100010000100011100000000001001010011101011100101000111011100010001111101011111100000010111110101010000000100110110111111000000111110111010100110000010110000111010001111000101011111101011101101010010100010111100011100000001010101110111111101101100101010011100111011110101011011";
 //        char[] tester = test.toCharArray();
@@ -55,108 +63,104 @@ public class SDES {
     static byte[] keyStraightPBoxTable = {2, 4, 1, 6, 3, 9, 0, 8, 7, 5}; // straight pbox table for the key generator
     static byte[] keyCompressionPBoxTable = {5, 2, 6, 3, 7, 4, 9, 8}; // compression pbox table for key generator
 
-    public static byte[] Cipher(byte[] rawkey, byte[] plaintext) {
+    public static byte[] Encryption(byte[] rawkey, byte[] plaintext) {
 
-        int length = plaintext.length;
+        // generate keys
+        byte[][] generatedKeys = keyGenerator(rawkey, 2);
 
-        byte[] cipherText = new byte[length];
+        byte[] initialPerm = permute(8, 8, plaintext, initialPBoxTable);
 
-        /* initial permute */
-        byte[] initialPermutation = permute(8, 8, plaintext, initialPBoxTable);
+        byte[] L0 = split(initialPerm, 'l');
+        byte[] R0 = split(initialPerm, 'r');
 
-        /* split 4 bits each*/
-        byte[] leftSplit = split(initialPermutation, 'l');
-        byte[] rightSplit = split(initialPermutation, 'r');
+        // ROUND 1
+        // Mixer
+        byte[] mixer = mixer(L0, R0, generatedKeys[0] );
+        // Swapper
+        byte[] swapper = combine(R0, mixer); // and combine
+        // END ROUND 1
 
-        // need to generate keys first
-        byte[][] keys = keyGenerator(rawkey, 2);
-        byte[] roundOneKey = keys[0];
-        byte[] roundTwoKey = keys[1];
+        byte[] L1 = split(swapper, 'l');
+        byte[] R1 = split(swapper, 'r');
 
-        // mixer(right, key)
+        // ROUND 2
+        // Mixer
+        byte[] mixerTwo = mixer(L1, R1, generatedKeys[1] );
+        // No swapper this round
+        byte[] combined = combine(mixerTwo, R1); // and combine
+        // END ROUND 2
 
-        /* mixer (DES Function and XOR) */
-        /* * DES Function */
-        // * expansion pbox 4bits -> 8 bits
-        byte[] expansion = permute(4, 8, rightSplit, expansionPermutationTable);
+        byte[] finalPermutation = permute(8, 8, combined, finalPBoxTable);
 
-        // * XOR 8bits -> 8bits
-        byte[] xorWithKey = whitenerXOR(expansion, roundOneKey);
-
-        // * Sboxes 8bits
-        // * -split 8bits -> 2 4bits
-        byte[] leftSBoxSplit = split(xorWithKey, 'l');
-        byte[] rightSBoxSplit = split(xorWithKey, 'r');
-        // * -sbox1 4bits -> 2bits | -sbox2 4bits -> 2bits
-        byte[] sBoxOne = sbox(leftSBoxSplit, sBox1Table);
-        byte[] sBoxTwo = sbox(rightSBoxSplit, sBox2Table);
-
-        // * -combine 2 2bits -> 4bits
-        byte[] combineSBox = combine(sBoxOne, sBoxTwo);
-
-        // * straight pbox 4bits -> 4bits
-        byte[] straightPBox = permute(4, 4, combineSBox, functionStraightPBoxTable);
-
-        /* end of function */
-
-        // Left XOR DES (Right) 4bits -> 4bits [mixer]
-        byte[] leftSplitXORwithFunction = whitenerXOR(leftSplit, straightPBox);
-
-        /* SWAP then combine (XOR) */
-        byte[] SWAPcombineXORWithOriginalRight = combine(rightSplit, leftSplitXORwithFunction);
-
-        /* ********** Round 2 ********** */
-
-        byte[] leftSplitForRoundTwo = split(SWAPcombineXORWithOriginalRight, 'l');
-        byte[] rightSplitForRoundTwo = split(SWAPcombineXORWithOriginalRight, 'r');
-
-
-        /* mixer (DES Function and XOR) */
-        /* * DES Function */
-        // * expansion pbox 4bits -> 8 bits
-        byte[] expansionRoundTwo= permute(4, 8, rightSplitForRoundTwo, expansionPermutationTable);
-
-        // * XOR 8bits -> 8bits
-        byte[] xorWithKeyRoundTwo = whitenerXOR(expansionRoundTwo, roundTwoKey);
-
-        // * Sboxes 8bits
-        // * -split 8bits -> 2 4bits
-        byte[] leftSBoxSplitRoundTwo = split(xorWithKeyRoundTwo, 'l');
-        byte[] rightSBoxSplitRoundTwo = split(xorWithKeyRoundTwo, 'r');
-        // * -sbox1 4bits -> 2bits | -sbox2 4bits -> 2bits
-        byte[] sBoxOneRoundTwo = sbox(leftSBoxSplitRoundTwo, sBox1Table);
-        byte[] sBoxTwoRoundTwo = sbox(rightSBoxSplitRoundTwo, sBox2Table);
-
-        // * -combine 2 2bits -> 4bits
-        byte[] combineSBoxRoundTwo = combine(sBoxOneRoundTwo, sBoxTwoRoundTwo);
-
-        // * straight pbox 4bits -> 4bits
-        byte[] straightPBoxRoundTwo = permute(4, 4, combineSBoxRoundTwo, functionStraightPBoxTable);
-
-        // Left XOR DES (Right) 4bits -> 4bits [mixer]
-        byte[] leftSplitXORwithFunctionRoundTwo = whitenerXOR(leftSplitForRoundTwo, straightPBoxRoundTwo);
-
-        /* final permute again */
-        cipherText = permute(8,8, combine(leftSplitXORwithFunctionRoundTwo, rightSplitForRoundTwo), finalPBoxTable);
-
-        return cipherText;
+        return finalPermutation;
 
     }
 
-    public static void Encryption(byte[] key, byte[] plaintext) {
 
-        byte[] cipheredText = new byte[8];
+    public static byte[] Decryption (byte[] rawkey, byte[] cipherText){
 
-        System.out.println("* Initial Permutation");
-        byte[] initialPerm = permute(8, 8, plaintext, initialPBoxTable);
-        print(initialPerm);
+        // generate keys
+        byte[][] generatedKeys = keyGenerator(rawkey, 2);
 
-        System.out.println("* Split left (L0) and right (R0)");
-        byte[] leftSplit = split(initialPerm, 'l');
-        byte[] rightSplit = split(initialPerm, 'r');
-        print(leftSplit);
-        print(rightSplit);
+        byte[] initialPerm = permute(8, 8, cipherText, initialPBoxTable);
 
+        byte[] L0 = split(initialPerm, 'l');
+        byte[] R0 = split(initialPerm, 'r');
+
+        // ROUND 1
+        // Mixer
+        byte[] mixer = mixer(L0, R0, generatedKeys[1] );
+        // Swapper
+        byte[] swapper = combine(R0, mixer); // and combine
+        // END ROUND 1
+
+        byte[] L1 = split(swapper, 'l');
+        byte[] R1 = split(swapper, 'r');
+
+        // ROUND 2
+        // Mixer
+        byte[] mixerTwo = mixer(L1, R1, generatedKeys[0] );
+        // No swapper this round
+        byte[] combined = combine(mixerTwo, R1); // and combine
+        // END ROUND 2
+
+        byte[] finalPermutation = permute(8, 8, combined, finalPBoxTable);
+
+        return finalPermutation;
+
+
+    }
+
+    static byte[] mixer(byte[] left, byte[] right, byte[] key) {
+
+        // function returns 4 bits
+        byte[] funcResult = desFunction(right, key);
+
+        byte[] leftXORwithFunction = whitenerXOR(left, funcResult);
+
+        // xor with function result
+        return leftXORwithFunction;
+
+    }
+
+    static byte[] desFunction(byte[] rightPlainText, byte[] key) {
+
+        /* * DES Function */
+        // * expansion pbox 4bits -> 8 bits
+        byte[] expansion = permute(4, 8, rightPlainText, expansionPermutationTable);
+
+        // * XOR 8bits -> 8bits
+        byte[] expansionXORWithKey = whitenerXOR(expansion, key);
+
+        // * Sboxes 8bits
+        // * -split 8bits -> 2 4bits
+        byte[] leftSBoxSplit = split(expansionXORWithKey, 'l');
+        byte[] rightSBoxSplit = split(expansionXORWithKey, 'r');
+        // * -sbox1 4bits -> 2bits & -sbox2 4bits -> 2bits
+        byte[] sBoxOne = sbox(leftSBoxSplit, sBox1Table);
+        byte[] sBoxTwo = sbox(rightSBoxSplit, sBox2Table);
+
+<<<<<<< HEAD
         System.out.println("* * Round 1 * *");
         System.out.println("* Mixer *");
         byte[] mixer = mixer(leftSplit, rightSplit, key);
@@ -192,6 +196,15 @@ public class SDES {
         System.out.println("second mixer " + afterSecondmixer.length);
         byte[] finalPermutation = permute(8,8,afterSecondmixer, finalPBoxTable);
         return finalPermutation;
+=======
+        // * -combine 2 2bits -> 4bits
+        byte[] combinedSBox = combine(sBoxOne, sBoxTwo);
+
+        // * straight pbox 4bits -> 4bits
+        byte[] straightPBox = permute(4, 4, combinedSBox, functionStraightPBoxTable);
+        // returns 4-bits
+        return straightPBox;
+>>>>>>> 2ab6a3f94d41cfa663f57f307e9f8aeecc1e89d6
 
     }
 
@@ -292,50 +305,6 @@ public class SDES {
     }
 
 
-    static byte[] mixer(byte[] left, byte[] right, byte[] key) {
-
-        // function returns 4 bits
-        byte[] funcResult = desFunction(right, key);
-
-        // xor with function result
-        return whitenerXOR(left, funcResult);
-
-    }
-
-    void swapper() {
-
-    }
-
-    static byte[] desFunction(byte[] rightPlainText, byte[] key) {
-
-        /* * DES Function */
-        // * expansion pbox 4bits -> 8 bits
-        byte[] expansion = permute(4, 8, rightPlainText, expansionPermutationTable);
-
-        // * XOR 8bits -> 8bits
-        byte[] xorWithKey = whitenerXOR(expansion, key);
-
-        // * Sboxes 8bits
-        // * -split 8bits -> 2 4bits
-        byte[] leftSBoxSplit = split(xorWithKey, 'l');
-        byte[] rightSBoxSplit = split(xorWithKey, 'r');
-        // * -sbox1 4bits -> 2bits & -sbox2 4bits -> 2bits
-        byte[] sBoxOne = sbox(leftSBoxSplit, sBox1Table);
-        byte[] sBoxTwo = sbox(rightSBoxSplit, sBox2Table);
-
-        // * -combine 2 2bits -> 4bits
-        byte[] combinedSBox = combine(sBoxOne, sBoxTwo);
-
-        // * straight pbox 4bits -> 4bits
-        byte[] straightPBox = permute(4, 4, combinedSBox, functionStraightPBoxTable);
-        // returns 4-bits
-        return straightPBox;
-
-    }
-
-    void substitute() {
-    }
-
     // key generator returns keys for each round
     static byte[][] keyGenerator(byte[] cipherKey, int rounds) {
 
@@ -427,6 +396,93 @@ public class SDES {
         System.out.println();
     }
 
+    public static byte[] Cipher(byte[] rawkey, byte[] plaintext) {
+
+        int length = plaintext.length;
+
+        byte[] cipherText = new byte[length];
+
+        /* initial permute */
+        byte[] initialPermutation = permute(8, 8, plaintext, initialPBoxTable);
+
+        /* split 4 bits each*/
+        byte[] leftSplit = split(initialPermutation, 'l');
+        byte[] rightSplit = split(initialPermutation, 'r');
+
+        // need to generate keys first
+        byte[][] keys = keyGenerator(rawkey, 2);
+        byte[] roundOneKey = keys[0];
+        byte[] roundTwoKey = keys[1];
+
+        // mixer(right, key)
+
+        /* mixer (DES Function and XOR) */
+        /* * DES Function */
+        // * expansion pbox 4bits -> 8 bits
+        byte[] expansion = permute(4, 8, rightSplit, expansionPermutationTable);
+
+        // * XOR 8bits -> 8bits
+        byte[] xorWithKey = whitenerXOR(expansion, roundOneKey);
+
+        // * Sboxes 8bits
+        // * -split 8bits -> 2 4bits
+        byte[] leftSBoxSplit = split(xorWithKey, 'l');
+        byte[] rightSBoxSplit = split(xorWithKey, 'r');
+        // * -sbox1 4bits -> 2bits | -sbox2 4bits -> 2bits
+        byte[] sBoxOne = sbox(leftSBoxSplit, sBox1Table);
+        byte[] sBoxTwo = sbox(rightSBoxSplit, sBox2Table);
+
+        // * -combine 2 2bits -> 4bits
+        byte[] combineSBox = combine(sBoxOne, sBoxTwo);
+
+        // * straight pbox 4bits -> 4bits
+        byte[] straightPBox = permute(4, 4, combineSBox, functionStraightPBoxTable);
+
+        /* end of function */
+
+        // Left XOR DES (Right) 4bits -> 4bits [mixer]
+        byte[] leftSplitXORwithFunction = whitenerXOR(leftSplit, straightPBox);
+
+        /* SWAP then combine (XOR) */
+        byte[] SWAPcombineXORWithOriginalRight = combine(rightSplit, leftSplitXORwithFunction);
+
+        /* ********** Round 2 ********** */
+
+        byte[] leftSplitForRoundTwo = split(SWAPcombineXORWithOriginalRight, 'l');
+        byte[] rightSplitForRoundTwo = split(SWAPcombineXORWithOriginalRight, 'r');
+
+
+        /* mixer (DES Function and XOR) */
+        /* * DES Function */
+        // * expansion pbox 4bits -> 8 bits
+        byte[] expansionRoundTwo = permute(4, 8, rightSplitForRoundTwo, expansionPermutationTable);
+
+        // * XOR 8bits -> 8bits
+        byte[] xorWithKeyRoundTwo = whitenerXOR(expansionRoundTwo, roundTwoKey);
+
+        // * Sboxes 8bits
+        // * -split 8bits -> 2 4bits
+        byte[] leftSBoxSplitRoundTwo = split(xorWithKeyRoundTwo, 'l');
+        byte[] rightSBoxSplitRoundTwo = split(xorWithKeyRoundTwo, 'r');
+        // * -sbox1 4bits -> 2bits | -sbox2 4bits -> 2bits
+        byte[] sBoxOneRoundTwo = sbox(leftSBoxSplitRoundTwo, sBox1Table);
+        byte[] sBoxTwoRoundTwo = sbox(rightSBoxSplitRoundTwo, sBox2Table);
+
+        // * -combine 2 2bits -> 4bits
+        byte[] combineSBoxRoundTwo = combine(sBoxOneRoundTwo, sBoxTwoRoundTwo);
+
+        // * straight pbox 4bits -> 4bits
+        byte[] straightPBoxRoundTwo = permute(4, 4, combineSBoxRoundTwo, functionStraightPBoxTable);
+
+        // Left XOR DES (Right) 4bits -> 4bits [mixer]
+        byte[] leftSplitXORwithFunctionRoundTwo = whitenerXOR(leftSplitForRoundTwo, straightPBoxRoundTwo);
+
+        /* final permute again */
+        cipherText = permute(8,8, combine(leftSplitXORwithFunctionRoundTwo, rightSplitForRoundTwo), finalPBoxTable);
+
+        return cipherText;
+
+    }
 
     /* *********** Testing *********** */
 
@@ -460,6 +516,7 @@ public class SDES {
         for(int i = 0; i < 4; i++) {
             print(Cipher(testRawKeys[i], testPlaintText[i]) );
         }
+
     }
 
     // handles initial permutation, expansion, and compression permutation
@@ -670,7 +727,6 @@ public class SDES {
         print(newCiph3[1]);
     }
 
-    // confimed
     static void combineTestCase() {
         byte[] test1 = {0, 1, 1, 0, 1};
         byte[] test2 = {0, 0, 0, 1, 1};
@@ -760,6 +816,48 @@ public class SDES {
         System.out.println("wat");
         System.out.println(sBox1Result);
         System.out.println(sBox1Test);
+
+    }
+
+    static void EncryptionTestCase(byte[] key, byte[] plaintext) {
+
+        // generate keys
+        byte[][] generatedKeys = keyGenerator(key, 2);
+
+        System.out.println("* Initial Permutation");
+        byte[] initialPerm = permute(8, 8, plaintext, initialPBoxTable);
+        print(initialPerm);
+
+        System.out.println("* Split left (L0) and right (R0)");
+        byte[] L0 = split(initialPerm, 'l');
+        byte[] R0 = split(initialPerm, 'r');
+        print(L0);
+        print(R0);
+
+        System.out.println("* * Round 1 * *");
+        System.out.println("* Mixer *");
+        byte[] mixer = mixer(L0, R0, generatedKeys[0] );
+        print(mixer);
+        System.out.println("* Swapper *");
+        byte[] swapper = combine(R0, mixer); // and combine
+        System.out.println("* * End Round 1 * *");
+
+        byte[] L1 = split(swapper, 'l');
+        byte[] R1 = split(swapper, 'r');
+        print(L1);
+        print(R1);
+
+        System.out.println("* * Round 2 * *");
+        System.out.println("* Mixer *");
+        byte[] mixerTwo = mixer(L1, R1, generatedKeys[1] );
+        print(mixer);
+        System.out.println("* No Swapper *");
+        byte[] combined = combine(mixerTwo, R1); // and combine
+        System.out.println("* * End Round 2 * *");
+
+        System.out.println("* Final Permutation *");
+        byte[] finalPermutation = permute(8, 8, combined, finalPBoxTable);
+        print(finalPermutation);
 
     }
 
