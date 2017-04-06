@@ -51,10 +51,9 @@ public class SDES {
                 {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
         };
 
-        byte[] key = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-        //print(testRawKeys[0]);
-
-         Encryption(testPlaintText[0], key);
+        for(int i = 0; i < 4; i++) {
+            print(Encryption(testRawKeys[i], testPlaintText[i]) );
+        }
 
 //        String test = "1011011001111001001011101111110000111110100000000001110111010001111011111101101100010011000000101101011010101000101111100011101011010111100011101001010111101100101110000010010101110001110111011111010101010100001100011000011010101111011111010011110111001001011100101101001000011011111011000010010001011101100011011110000000110010111111010000011100011111111000010111010100001100001010011001010101010000110101101111111010010110001001000001111000000011110000011110110010010101010100001000011010000100011010101100000010111000000010101110100001000111010010010101110111010010111100011111010101111011101111000101001010001101100101100111001110111001100101100011111001100000110100001001100010000100011100000000001001010011101011100101000111011100010001111101011111100000010111110101010000000100110110111111000000111110111010100110000010110000111010001111000101011111101011101101010010100010111100011100000001010101110111111101101100101010011100111011110101011011";
 //        char[] tester = test.toCharArray();
@@ -66,18 +65,18 @@ public class SDES {
 
     }
 
-    public static void Encryption(byte[] rawkey, byte[] plaintext) {
+    public static byte[] Encryption(byte[] rawkey, byte[] plaintext) {
 
         int length = plaintext.length;
 
-        byte[] cipherText = new byte[length - 1];
+        byte[] cipherText = new byte[length];
 
         /* initial permute */
-        byte[] plainTextBlock = permute(8, 8, plaintext, initialPBoxTable);
+        byte[] initialPermutation = permute(8, 8, plaintext, initialPBoxTable);
 
         /* split 4 bits each*/
-        byte[] leftSplit = split(plainTextBlock, 'l');
-        byte[] rightSplit = split(plainTextBlock, 'r');
+        byte[] leftSplit = split(initialPermutation, 'l');
+        byte[] rightSplit = split(initialPermutation, 'r');
 
         /* mixer (DES Function and XOR) */
         /* * DES Function */
@@ -85,14 +84,12 @@ public class SDES {
         byte[] expansion = permute(4, 8, rightSplit, expansionPermutationTable);
 
         // need to generate keys first
-        byte[][] key = keyGenerator(rawkey, 2);
-        byte[] roundOneKey = key[0];
-        byte[] roundTwoKey = key[1];
-
-        //print(roundOneKey);
+        byte[][] keys = keyGenerator(rawkey, 2);
+        byte[] roundOneKey = keys[0];
+        byte[] roundTwoKey = keys[1];
 
         // * XOR 8bits -> 8bits
-        byte[] xorWithKey = whitenerXOR(expansion, key[0]);
+        byte[] xorWithKey = whitenerXOR(expansion, roundOneKey);
 
         // * Sboxes 8bits
         // * -split 8bits -> 2 4bits
@@ -114,10 +111,41 @@ public class SDES {
         /* SWAP then combine (XOR) */
         byte[] SWAPcombineXORWithOriginalRight = combine(rightSplit, leftSplitXORwithFunction);
 
-        /* final permute again */
-        cipherText = permute(8,8, SWAPcombineXORWithOriginalRight, finalPBoxTable);
+        /* ********** Round 2 ********** */
 
-        //return cipherText;
+        byte[] leftSplitForRoundTwo = split(SWAPcombineXORWithOriginalRight, 'l');
+        byte[] rightSplitForRoundTwo = split(SWAPcombineXORWithOriginalRight, 'r');
+
+
+        /* mixer (DES Function and XOR) */
+        /* * DES Function */
+        // * expansion pbox 4bits -> 8 bits
+        byte[] expansionRoundTwo= permute(4, 8, rightSplitForRoundTwo, expansionPermutationTable);
+
+        // * XOR 8bits -> 8bits
+        byte[] xorWithKeyRoundTwo = whitenerXOR(expansionRoundTwo, roundTwoKey);
+
+        // * Sboxes 8bits
+        // * -split 8bits -> 2 4bits
+        byte[] leftSBoxSplitRoundTwo = split(xorWithKeyRoundTwo, 'l');
+        byte[] rightSBoxSplitRoundTwo = split(xorWithKeyRoundTwo, 'r');
+        // * -sbox1 4bits -> 2bits | -sbox2 4bits -> 2bits
+        byte[] sBoxOneRoundTwo = sbox(leftSBoxSplitRoundTwo, sBox1Table);
+        byte[] sBoxTwoRoundTwo = sbox(rightSBoxSplitRoundTwo, sBox2Table);
+
+        // * -combine 2 2bits -> 4bits
+        byte[] combineSBoxRoundTwo = combine(sBoxOneRoundTwo, sBoxTwoRoundTwo);
+
+        // * straight pbox 4bits -> 4bits
+        byte[] straightPBoxRoundTwo = permute(4, 4, combineSBoxRoundTwo, functionStraightPBoxTable);
+
+        // Left XOR DES (Right) 4bits -> 4bits [mixer]
+        byte[] leftSplitXORwithFunctionRoundTwo = whitenerXOR(leftSplitForRoundTwo, straightPBoxRoundTwo);
+
+        /* final permute again */
+        cipherText = permute(8,8, combine(leftSplitXORwithFunctionRoundTwo, rightSplitForRoundTwo), finalPBoxTable);
+
+        return cipherText;
 
     }
 
@@ -162,7 +190,7 @@ public class SDES {
         byte[] xor = new byte[bits];
 
         for (int i = 0; i < bits; i++) {
-            xor[i] = (byte) (plainText[i] ^ key[i]);
+            xor[i] = (byte)(plainText[i] ^ key[i]);
         }
         return xor;
     }
