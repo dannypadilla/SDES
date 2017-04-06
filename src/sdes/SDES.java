@@ -7,10 +7,17 @@ public class SDES {
 
         byte[] pt = {1, 1, 1, 1, 0, 0, 1, 0};
         byte[] key = {1, 0, 1, 1, 1, 0, 0, 1, 1, 0};
+        byte[] cipher = {0, 0, 0, 0, 0, 1, 0, 0};
 
         byte[][] keyGenerator = keyGenerator(key, 2);
 
         Encryption(key, pt);
+
+        byte[] decrypt = Decryption(key, cipher);
+        System.out.println("test");
+        for(int i = 0; i < decrypt.length; i++){
+            System.out.print(decrypt[i]);
+        }
 
         // SDESImplementationTest();
 
@@ -158,7 +165,33 @@ public class SDES {
         byte[] swapper = combine(rightSplit, mixer); // and combine
         System.out.println("* * End Round 1 * *");
         byte[] finalPermutation = permute(8, 8, swapper, finalPBoxTable);
+    }
 
+    public static byte[] Decryption(byte[] key, byte[] ciphertext){
+        byte[][] keyHolder = keyGenerator(key, 2);
+        byte[] initialPerm = permute(8,8,ciphertext, ciphertext);
+        System.out.println("initial perm " + initialPerm.length);
+        byte[] leftSplit = split(initialPerm, 'l');
+        byte[] rightSplit = split(initialPerm, 'r');
+
+        byte[] firstMixer = mixer(leftSplit, rightSplit, keyHolder[1]);
+        byte[] afterCombination = combine(leftSplit, firstMixer);
+
+        System.out.println("afterCombination " + afterCombination.length);
+        byte[] swapper = new byte[afterCombination.length];
+        for(int i = 0; i < swapper.length/2; i++){
+            swapper[i] = afterCombination[swapper.length/2 + i];
+            swapper[swapper.length/2 + i] = afterCombination[i];
+        }
+        System.out.println("swapper " + swapper.length);
+
+        byte[] secondLeftSplit = split(swapper, 'l');
+        byte[] secondRightSplit = split(swapper, 'r');
+        byte[] secondMixer = mixer(secondLeftSplit, secondRightSplit,keyHolder[0]);
+        byte[] afterSecondmixer = combine(secondLeftSplit, secondMixer);
+        System.out.println("second mixer " + afterSecondmixer.length);
+        byte[] finalPermutation = permute(8,8,afterSecondmixer, finalPBoxTable);
+        return finalPermutation;
 
     }
 
