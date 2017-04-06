@@ -1,6 +1,9 @@
 package sdes;
 
 
+import com.sun.jdi.ByteValue;
+import com.sun.jdi.IntegerType;
+
 public class SDES {
 
     static byte[] initialPBoxTable = {1, 5, 2, 0, 3, 7, 4, 6}; // initial-permutation table
@@ -486,18 +489,33 @@ public class SDES {
         byte[] sBox1Row = {leftSplitSbox1[0], leftSplitSbox1[3] };
         byte[] sBox1Column= {leftSplitSbox1[1], leftSplitSbox1[2] };
 
-        byte[] newSBox1 = new byte[2];
-        byte[] newSBox2 = new byte[2];
-        byte carry = 0;
-        int len = test.length / 2 - 1;
+        System.out.println("Left Split SBox 1: Row, Column: ");
+        print(sBox1Row);
+        print(sBox1Column);
 
-        for (int i = len; i > 0; i--) {
-            newSBox1[i] = sum(sBox1Row[i], sBox1Column[i], carry);
+        String rowString = "";
+        String columnString = "";
 
-            //newSBox2[i] = sum(sBox1Row[i], m[i], carry);
-            carry = carryIn(sBox1Row[i], sBox1Column[i], carry);
+        for(int i = 0; i < 2; i++) {
+            rowString += sBox1Row[i];
         }
 
+        for(int i = 0; i < 2; i++) {
+            columnString += sBox1Column[i];
+        }
+
+        int row = Integer.parseInt(rowString, 2);
+        int column = Integer.parseInt(columnString, 2);
+
+        int sBox1Result = sBox1Table[row][column];
+        String sBox1Test = Integer.toBinaryString(sBox1Table[1][0]);
+
+        System.out.println(sBox1Result);
+        System.out.println(sBox1Test);
+
+        String sBoxOutput
+
+        System.out.println(Integer.toBinaryString(sBox1Test) );
     }
 
     static byte sum(byte a, byte b, byte carry) {
