@@ -58,7 +58,7 @@ public class SDES {
 
         // ROUND 1
         // Mixer
-        byte[] mixer = mixer(L0, R0, generatedKeys[0] );
+        byte[] mixer = mixer(L0, R0, generatedKeys[1] );
         // Swapper
         byte[] swapper = combine(R0, mixer); // and combine
         // END ROUND 1
@@ -68,7 +68,7 @@ public class SDES {
 
         // ROUND 2
         // Mixer
-        byte[] mixerTwo = mixer(L1, R1, generatedKeys[1] );
+        byte[] mixerTwo = mixer(L1, R1, generatedKeys[0] );
         // No swapper this round
         byte[] combined = combine(mixerTwo, R1); // and combine
         // END ROUND 2
