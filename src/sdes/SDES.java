@@ -6,28 +6,19 @@ public class SDES {
     public static void main(String[] args) {
 
         byte[] key = {1, 0, 1, 1, 1, 0, 0, 1, 1, 0};
-<<<<<<< HEAD
         byte[] cipher = {0, 0, 0, 0, 0, 1, 0, 0};
-=======
+
         byte[] key2 = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
         byte[] pt = {1, 1, 1, 1, 0, 0, 1, 0};
-        byte[] cipher ={0, 0, 0, 0, 0, 1, 0,0};
->>>>>>> 2ab6a3f94d41cfa663f57f307e9f8aeecc1e89d6
+
 
         print(Encryption(key, pt) );
 
-<<<<<<< HEAD
-        byte[] decrypt = Decryption(key, cipher);
-        System.out.println("test");
-        for(int i = 0; i < decrypt.length; i++){
-            System.out.print(decrypt[i]);
-        }
-
         // SDESImplementationTest();
-=======
+
         print(Decryption(key2, cipher));
         //SDESImplementationTest();
->>>>>>> 2ab6a3f94d41cfa663f57f307e9f8aeecc1e89d6
+
 
 //        String test = "1011011001111001001011101111110000111110100000000001110111010001111011111101101100010011000000101101011010101000101111100011101011010111100011101001010111101100101110000010010101110001110111011111010101010100001100011000011010101111011111010011110111001001011100101101001000011011111011000010010001011101100011011110000000110010111111010000011100011111111000010111010100001100001010011001010101010000110101101111111010010110001001000001111000000011110000011110110010010101010100001000011010000100011010101100000010111000000010101110100001000111010010010101110111010010111100011111010101111011101111000101001010001101100101100111001110111001100101100011111001100000110100001001100010000100011100000000001001010011101011100101000111011100010001111101011111100000010111110101010000000100110110111111000000111110111010100110000010110000111010001111000101011111101011101101010010100010111100011100000001010101110111111101101100101010011100111011110101011011";
 //        char[] tester = test.toCharArray();
@@ -159,44 +150,6 @@ public class SDES {
         // * -sbox1 4bits -> 2bits & -sbox2 4bits -> 2bits
         byte[] sBoxOne = sbox(leftSBoxSplit, sBox1Table);
         byte[] sBoxTwo = sbox(rightSBoxSplit, sBox2Table);
-
-<<<<<<< HEAD
-        System.out.println("* * Round 1 * *");
-        System.out.println("* Mixer *");
-        byte[] mixer = mixer(leftSplit, rightSplit, key);
-        print(mixer);
-        System.out.println("* Swapper *");
-        byte[] swapper = combine(rightSplit, mixer); // and combine
-        System.out.println("* * End Round 1 * *");
-        byte[] finalPermutation = permute(8, 8, swapper, finalPBoxTable);
-    }
-
-    public static byte[] Decryption(byte[] key, byte[] ciphertext){
-        byte[][] keyHolder = keyGenerator(key, 2);
-        byte[] initialPerm = permute(8,8,ciphertext, ciphertext);
-        System.out.println("initial perm " + initialPerm.length);
-        byte[] leftSplit = split(initialPerm, 'l');
-        byte[] rightSplit = split(initialPerm, 'r');
-
-        byte[] firstMixer = mixer(leftSplit, rightSplit, keyHolder[1]);
-        byte[] afterCombination = combine(leftSplit, firstMixer);
-
-        System.out.println("afterCombination " + afterCombination.length);
-        byte[] swapper = new byte[afterCombination.length];
-        for(int i = 0; i < swapper.length/2; i++){
-            swapper[i] = afterCombination[swapper.length/2 + i];
-            swapper[swapper.length/2 + i] = afterCombination[i];
-        }
-        System.out.println("swapper " + swapper.length);
-
-        byte[] secondLeftSplit = split(swapper, 'l');
-        byte[] secondRightSplit = split(swapper, 'r');
-        byte[] secondMixer = mixer(secondLeftSplit, secondRightSplit,keyHolder[0]);
-        byte[] afterSecondmixer = combine(secondLeftSplit, secondMixer);
-        System.out.println("second mixer " + afterSecondmixer.length);
-        byte[] finalPermutation = permute(8,8,afterSecondmixer, finalPBoxTable);
-        return finalPermutation;
-=======
         // * -combine 2 2bits -> 4bits
         byte[] combinedSBox = combine(sBoxOne, sBoxTwo);
 
@@ -204,7 +157,7 @@ public class SDES {
         byte[] straightPBox = permute(4, 4, combinedSBox, functionStraightPBoxTable);
         // returns 4-bits
         return straightPBox;
->>>>>>> 2ab6a3f94d41cfa663f57f307e9f8aeecc1e89d6
+
 
     }
 
