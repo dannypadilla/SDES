@@ -22,8 +22,6 @@ public class SDESEncoding {
 
         byte[] testByte = test.Convert(testArray);
 
-//        System.out.println(testByte[0]);
-//        System.out.println(test.convert(testByte[0]).length);
         for(int i = 0; i < testByte.length; i++){
             for(int j = 0; j < test.convert(testByte[i]).length; j++){
                 System.out.print(test.convert(testByte[i])[j]);
@@ -32,9 +30,6 @@ public class SDESEncoding {
         }
 
 
-//        for (int i = 0; i < testByte.length; i++) {
-//            System.out.println(testByte[i]);
-//        }
 
 //        byte[] fiveBitsFromTxtFile = {1, 1, 1, 1, 1};
 //

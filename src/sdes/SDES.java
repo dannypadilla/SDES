@@ -1,5 +1,8 @@
 package sdes;
 
+
+import com.sun.deploy.util.SystemUtils;
+
 public class SDES {
 
     static byte[] initialPBoxTable = {1, 5, 2, 0, 3, 7, 4, 6}; // initial-permutation table
@@ -152,14 +155,36 @@ public class SDES {
 
         byte[] result = new byte[2];
 
-        for(int i = 0; i < result.length; i++) {
-            if(result.length == 1) {
-                result[i] = (byte)0;
-                result[i + 1] = 1;
-            } else {
+//        for(int i = 0; i < result.length; i++) {
+//            if(result.length == 1) {
+//                result[i] = (byte)0;
+//                result[i + 1] = 1;
+//            } else {
+//
+//            }
 
-            }
+//            if(result.length == 1) {
+        byte[] swapper = new byte[2];
+        swapper[0] = 1;
+        swapper[1] = 1;
+        result = swapper;
+        System.out.println("swapper stuff");
+        System.out.println(result[0] + " 0");
+        System.out.println(result[1] + " 0");
+//            }
+//        }
+
+        System.out.println("string to byte");
+        String h = "10";
+        for(int i = 0; i < 2; i++){
+            result[i] = (byte)h.charAt(i);
         }
+        for(int i = 0; i < result.length; i++){
+            //subtract 48 because ascii code for 0 starts at 48.
+            System.out.print(result[i]-48);
+        }
+
+
 
         //return result;
 
