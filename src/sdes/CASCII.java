@@ -348,7 +348,6 @@ public class CASCII {
                 return conversion;
             case 2:
                 conversion[3] = 1;
-                conversion[4] = 0;
                 return conversion;
             case 3:
                 //byte[] conversion = {0,0,0,1,1};
