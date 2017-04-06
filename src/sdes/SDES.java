@@ -51,10 +51,10 @@ public class SDES {
                 {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
         };
 
+        byte[] key = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
         //print(testRawKeys[0]);
 
-        byte[] cipherText = Encryption(testPlaintText[0], testRawKeys[0]);
-        print(cipherText);
+         Encryption(testPlaintText[0], key);
 
 //        String test = "1011011001111001001011101111110000111110100000000001110111010001111011111101101100010011000000101101011010101000101111100011101011010111100011101001010111101100101110000010010101110001110111011111010101010100001100011000011010101111011111010011110111001001011100101101001000011011111011000010010001011101100011011110000000110010111111010000011100011111111000010111010100001100001010011001010101010000110101101111111010010110001001000001111000000011110000011110110010010101010100001000011010000100011010101100000010111000000010101110100001000111010010010101110111010010111100011111010101111011101111000101001010001101100101100111001110111001100101100011111001100000110100001001100010000100011100000000001001010011101011100101000111011100010001111101011111100000010111110101010000000100110110111111000000111110111010100110000010110000111010001111000101011111101011101101010010100010111100011100000001010101110111111101101100101010011100111011110101011011";
 //        char[] tester = test.toCharArray();
@@ -66,11 +66,11 @@ public class SDES {
 
     }
 
-    public static byte[] Encryption(byte[] rawkey, byte[] plaintext) {
+    public static void Encryption(byte[] rawkey, byte[] plaintext) {
 
         int length = plaintext.length;
 
-        byte[] cipherText = new byte[length];
+        byte[] cipherText = new byte[length - 1];
 
         /* initial permute */
         byte[] plainTextBlock = permute(8, 8, plaintext, initialPBoxTable);
@@ -89,8 +89,10 @@ public class SDES {
         byte[] roundOneKey = key[0];
         byte[] roundTwoKey = key[1];
 
+        //print(roundOneKey);
+
         // * XOR 8bits -> 8bits
-        byte[] xorWithKey = whitenerXOR(expansion, roundOneKey);
+        byte[] xorWithKey = whitenerXOR(expansion, key[0]);
 
         // * Sboxes 8bits
         // * -split 8bits -> 2 4bits
@@ -115,7 +117,7 @@ public class SDES {
         /* final permute again */
         cipherText = permute(8,8, SWAPcombineXORWithOriginalRight, finalPBoxTable);
 
-        return cipherText;
+        //return cipherText;
 
     }
 
@@ -233,12 +235,15 @@ public class SDES {
         byte[] rightSplitKey = split(permutedKey, 'r');
 
         // shift left
-        leftSplitKey = shiftLeft(leftSplitKey);
+        byte[] leftKeyShift = shiftLeft(leftSplitKey);
         // shift right key
-        rightSplitKey = shiftLeft(rightSplitKey);
+        byte[] rightKeyShift = shiftLeft(rightSplitKey);
+
+        //combine
+        byte[] combine = combine(leftKeyShift, rightKeyShift);
 
         // combine then permute.... All in one line. Got Lazy
-        storedKeys[0] = permute(10, 8, combine(leftSplitKey, rightSplitKey), keyCompressionPBoxTable);
+        storedKeys[0] = permute(10, 8, combine, keyCompressionPBoxTable);
 
         // round 2
         // shift left
