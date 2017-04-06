@@ -32,9 +32,9 @@ public class SDES {
 
         byte[] test = {0, 1, 0, 1};
 
-        sbox(test, sBox1Table);
+        byte[] s = sbox(test, sBox1Table);
 
-        //print(s);
+        print(s);
 
 //        String test = "1011011001111001001011101111110000111110100000000001110111010001111011111101101100010011000000101101011010101000101111100011101011010111100011101001010111101100101110000010010101110001110111011111010101010100001100011000011010101111011111010011110111001001011100101101001000011011111011000010010001011101100011011110000000110010111111010000011100011111111000010111010100001100001010011001010101010000110101101111111010010110001001000001111000000011110000011110110010010101010100001000011010000100011010101100000010111000000010101110100001000111010010010101110111010010111100011111010101111011101111000101001010001101100101100111001110111001100101100011111001100000110100001001100010000100011100000000001001010011101011100101000111011100010001111101011111100000010111110101010000000100110110111111000000111110111010100110000010110000111010001111000101011111101011101101010010100010111100011100000001010101110111111101101100101010011100111011110101011011";
 //        char[] tester = test.toCharArray();
@@ -124,7 +124,7 @@ public class SDES {
         return xor;
     }
 
-    static void sbox(byte[] input, byte[][] sBoxTable) {
+    static byte[] sbox(byte[] input, byte[][] sBoxTable) {
 
         // take row and column values
         byte[] sBox1Row = {input[0], input[3] };
@@ -151,42 +151,18 @@ public class SDES {
         // convert int to binary
         String sBoxStringResult = Integer.toBinaryString(sBoxResult);
 
-        System.out.println(sBoxStringResult);
+        byte[] result = {0, 0};
 
-        byte[] result = new byte[2];
-
-//        for(int i = 0; i < result.length; i++) {
-//            if(result.length == 1) {
-//                result[i] = (byte)0;
-//                result[i + 1] = 1;
-//            } else {
-//
-//            }
-
-//            if(result.length == 1) {
-        byte[] swapper = new byte[2];
-        swapper[0] = 1;
-        swapper[1] = 1;
-        result = swapper;
-        System.out.println("swapper stuff");
-        System.out.println(result[0] + " 0");
-        System.out.println(result[1] + " 0");
-//            }
-//        }
-
-        System.out.println("string to byte");
-        String h = "10";
-        for(int i = 0; i < 2; i++){
-            result[i] = (byte)h.charAt(i);
-        }
-        for(int i = 0; i < result.length; i++){
-            //subtract 48 because ascii code for 0 starts at 48.
-            System.out.print(result[i]-48);
+        for(int i = 0; i < 2; i++) {
+            if (sBoxStringResult.length() == 1) {
+                result[i + 1] = (byte)(sBoxStringResult.charAt(i) - 48);
+                break;
+            } else {
+                result[i] = (byte)(sBoxStringResult.charAt(i) - 48);
+            }
         }
 
-
-
-        //return result;
+        return result;
 
     }
 
