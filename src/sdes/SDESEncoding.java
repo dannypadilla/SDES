@@ -1,6 +1,7 @@
 package sdes;
 import com.sun.deploy.util.SystemUtils;
 import sdes.CASCII;
+import sdes.SDES;
 
 
 
@@ -12,9 +13,31 @@ public class SDESEncoding {
     //    Give the SDES encoding of the following CASCII plaintext using the key 0111001101. (The answer
 //    is 64 bits long.)
 //    CRYPTOGRAPHY
-    byte[] key = {0, 1, 1, 1, 0, 0, 1, 1, 0, 1};
 
     public static void main(String[] args) {
+        byte[] key = {0, 1, 1, 1, 0, 0, 1, 1, 0, 1};
+        SDES sdes = new SDES();
+        CASCII cascii = new CASCII();
+
+        char[] array = {'C', 'R', 'Y', 'P','T','O','G','R','A','P','H','Y'};
+
+        byte[][] paddedArray = new byte[array.length][8];
+
+        for(int i = 0; i < array.length; i++){
+            paddedArray[i]= padding(cascii.convert(cascii.Convert(array[i])));
+        }
+
+        byte[][] encrypted = new byte[paddedArray.length][paddedArray[0].length];
+        for(int i = 0; i < paddedArray.length; i++){
+            encrypted[i] = sdes.Encryption(key, paddedArray[i]);
+        }
+        for(int i = 0; i < encrypted.length; i++){
+            sdes.print(encrypted[i]);
+        }
+
+
+
+
 //        CASCII test;
 //        test = new CASCII();
 //
@@ -68,5 +91,17 @@ public class SDESEncoding {
 
             //}
 //        }
+    }
+    public static byte[] padding(byte[] array){
+        byte[] padded = new byte[8];
+        for(int i = 0; i < 3; i++){
+            padded[i] = 0;
+        }
+        int counter = 3;
+        for(int i = 0; i < array.length; i++, counter++){
+            padded[counter] = array[i];
+        }
+
+        return padded;
     }
 }
