@@ -5,77 +5,7 @@ public class SDES {
 
     public static void main(String[] args) {
 
-        byte[][] rawkeys = {{0,0,0,0,0,0,0,0,0,0},
-                {1,1,1,1,1,1,1,1,1,1},
-                {0,0,0,0,0,1,1,1,1,1},
-                {0,0,0,0,0,1,1,1,1,1},
-                {1,0,0,0,1,0,1,1,1,0},
-                {1,0,0,0,1,0,1,1,1,0},
-                {0,0,1,0,0,1,1,1,1,1},
-                {0,0,1,0,0,1,1,1,1,1}
-        };
-
-        byte[][] plainText = {{0,0,0,0,0,0,0,0},
-                {1,1,1,1,1,1,1,1},
-                {0,0,0,0,0,0,0,0},
-                {1,1,1,1,1,1,1,1}
-        };
-
-        byte[][] cipherText = {{0,0,0,1,1,1,0,0},
-                {1,1,0,0,0,0,1,0},
-                {1,0,0,1,1,1,0,1},
-                {1,0,0,1,0,0,0,0}
-        };
-
-//        byte[][] encryption = new byte[rawkeys.length][plainText[0].length];
-//
-//        for(int i = 0; i <plainText.length; i++){
-//            encryption[i] = Encryption(rawkeys[i], plainText[i]);
-//        }
-//        int c = 0;
-//
-//        for(int i = plainText.length; i < rawkeys.length; i++, c++){
-//            encryption[i] = Decryption(rawkeys[i], cipherText[c]);
-//        }
-
-        System.out.println("Raw Keys                Plain Text                 CipherText");
-        for(int i = 0; i < plainText.length; i++){
-            print(rawkeys[i]);
-            System.out.print("                ");
-            print(plainText[i]);
-            System.out.print("                  ");
-            print(Encryption(rawkeys[i], plainText[i]));
-            System.out.println();
-
-        }
-        
-        for(int i = 0, c = plainText.length; i < cipherText.length; i++, c++){
-            print(rawkeys[c]);
-            System.out.print("                ");
-            print(Decryption(rawkeys[c], cipherText[i]));
-            System.out.print("                  ");
-            print(cipherText[i]);
-            System.out.println();
-        }
-//        for(int i = 0; i < rawkeys.length; i++){
-//            for(int l = 0; l < rawkeys[i].length; l++){
-//                System.out.print(rawkeys[i][l]);
-//            }
-//            System.out.print("                ");
-//            if(i < plainText.length) {
-//                for (int l = 0; l < plainText[i].length; l++) {
-//                    System.out.print(plainText[i][l]);
-//                }
-//            }
-//            else{
-//
-//            }
-//            System.out.print("                    ");
-//            for(int l = 0; l < encryption[i].length; l++){
-//                System.out.print(encryption[i][l]);
-//            }
-//            System.out.println();
-//        }
+        SDESImplementation();
 
     }
 
@@ -860,6 +790,52 @@ public class SDES {
         System.out.println("* Final Permutation *");
         byte[] finalPermutation = permute(8, 8, combined, finalPBoxTable);
         print(finalPermutation);
+
+    }
+
+    static void SDESImplementation() {
+
+        byte[][] rawkeys = {{0,0,0,0,0,0,0,0,0,0},
+                {1,1,1,1,1,1,1,1,1,1},
+                {0,0,0,0,0,1,1,1,1,1},
+                {0,0,0,0,0,1,1,1,1,1},
+                {1,0,0,0,1,0,1,1,1,0},
+                {1,0,0,0,1,0,1,1,1,0},
+                {0,0,1,0,0,1,1,1,1,1},
+                {0,0,1,0,0,1,1,1,1,1}
+        };
+
+        byte[][] plainText = {{0,0,0,0,0,0,0,0},
+                {1,1,1,1,1,1,1,1},
+                {0,0,0,0,0,0,0,0},
+                {1,1,1,1,1,1,1,1}
+        };
+
+        byte[][] cipherText = {{0,0,0,1,1,1,0,0},
+                {1,1,0,0,0,0,1,0},
+                {1,0,0,1,1,1,0,1},
+                {1,0,0,1,0,0,0,0}
+        };
+
+        System.out.println("Raw Keys                Plain Text                 CipherText");
+        for(int i = 0; i < plainText.length; i++){
+            print(rawkeys[i]);
+            System.out.print("                ");
+            print(plainText[i]);
+            System.out.print("                  ");
+            print(Encryption(rawkeys[i], plainText[i]));
+            System.out.println();
+
+        }
+
+        for(int i = 0, c = plainText.length; i < cipherText.length; i++, c++){
+            print(rawkeys[c]);
+            System.out.print("                ");
+            print(Decryption(rawkeys[c], cipherText[i]));
+            System.out.print("                  ");
+            print(cipherText[i]);
+            System.out.println();
+        }
 
     }
 
