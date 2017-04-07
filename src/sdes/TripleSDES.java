@@ -324,7 +324,7 @@ public class TripleSDES {
         for (int i = 0; i < arr.length; i++) {
             System.out.print(arr[i]);
         }
-        System.out.println();
+        //System.out.println();
     }
 
 /* *********** Testing *********** */
@@ -407,15 +407,40 @@ public class TripleSDES {
                 {1, 0, 0, 1, 0, 0, 1, 0},
         };
 
-        System.out.println("TripleSDES Encryption");
-        for(int i = 0; i < 4; i++) {
+
+
+        System.out.println("Raw Key 1                Raw Key 2                Plain Text                 CipherText");
+        for(int i = 0; i < plaintext.length; i++){
+            print(rawkey1ForEncryption[i]);
+            System.out.print("                ");
+
+            print(rawkey2ForEncryption[i]);
+            System.out.print("                ");
+
+            print(plaintext[i]);
+            System.out.print("                  ");
+
             print(Encryption(rawkey1ForEncryption[i], rawkey2ForEncryption[i], plaintext[i]) );
+            System.out.println();
+
         }
 
-        System.out.println("\nTripleSDES Decryption");
-        for(int i = 0; i < 4; i++) {
+        for(int i = 0, c = plaintext.length; i < ciphertext.length; i++, c++){
+            print(rawkey1ForDecryption[i]);
+            System.out.print("                ");
+
+            print(rawkey2ForDecryption[i]);
+            System.out.print("                ");
+
             print(Decryption(rawkey1ForDecryption[i], rawkey2ForDecryption[i], ciphertext[i]) );
+            System.out.print("                  ");
+
+            print(ciphertext[i]);
+            System.out.println();
         }
+
+
+
 
     }
 
