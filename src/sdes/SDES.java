@@ -5,28 +5,77 @@ public class SDES {
 
     public static void main(String[] args) {
 
-        byte[] key = {1, 0, 1, 1, 1, 0, 0, 1, 1, 0};
-        byte[] cipher = {0, 0, 0, 0, 0, 1, 0, 0};
+        byte[][] rawkeys = {{0,0,0,0,0,0,0,0,0,0},
+                {1,1,1,1,1,1,1,1,1,1},
+                {0,0,0,0,0,1,1,1,1,1},
+                {0,0,0,0,0,1,1,1,1,1},
+                {1,0,0,0,1,0,1,1,1,0},
+                {1,0,0,0,1,0,1,1,1,0},
+                {0,0,1,0,0,1,1,1,1,1},
+                {0,0,1,0,0,1,1,1,1,1}
+        };
 
-        byte[] key2 = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-        byte[] pt = {1, 1, 1, 1, 0, 0, 1, 0};
+        byte[][] plainText = {{0,0,0,0,0,0,0,0},
+                {1,1,1,1,1,1,1,1},
+                {0,0,0,0,0,0,0,0},
+                {1,1,1,1,1,1,1,1}
+        };
 
+        byte[][] cipherText = {{0,0,0,1,1,1,0,0},
+                {1,1,0,0,0,0,1,0},
+                {1,0,0,1,1,1,0,1},
+                {1,0,0,1,0,0,0,0}
+        };
 
-        print(Encryption(key, pt) );
-
-        // SDESImplementationTest();
-
-        print(Decryption(key2, cipher));
-        //SDESImplementationTest();
-
-
-//        String test = "1011011001111001001011101111110000111110100000000001110111010001111011111101101100010011000000101101011010101000101111100011101011010111100011101001010111101100101110000010010101110001110111011111010101010100001100011000011010101111011111010011110111001001011100101101001000011011111011000010010001011101100011011110000000110010111111010000011100011111111000010111010100001100001010011001010101010000110101101111111010010110001001000001111000000011110000011110110010010101010100001000011010000100011010101100000010111000000010101110100001000111010010010101110111010010111100011111010101111011101111000101001010001101100101100111001110111001100101100011111001100000110100001001100010000100011100000000001001010011101011100101000111011100010001111101011111100000010111110101010000000100110110111111000000111110111010100110000010110000111010001111000101011111101011101101010010100010111100011100000001010101110111111101101100101010011100111011110101011011";
-//        char[] tester = test.toCharArray();
-//        for(int i = 0; i < tester.length; i++){
-//            System.out.println(tester[i]);
+//        byte[][] encryption = new byte[rawkeys.length][plainText[0].length];
+//
+//        for(int i = 0; i <plainText.length; i++){
+//            encryption[i] = Encryption(rawkeys[i], plainText[i]);
 //        }
-//        System.out.println(tester.length);
+//        int c = 0;
+//
+//        for(int i = plainText.length; i < rawkeys.length; i++, c++){
+//            encryption[i] = Decryption(rawkeys[i], cipherText[c]);
+//        }
 
+        System.out.println("Raw Keys                Plain Text                 CipherText");
+        for(int i = 0; i < plainText.length; i++){
+            print(rawkeys[i]);
+            System.out.print("                ");
+            print(plainText[i]);
+            System.out.print("                  ");
+            print(Encryption(rawkeys[i], plainText[i]));
+            System.out.println();
+
+        }
+        
+        for(int i = 0, c = plainText.length; i < cipherText.length; i++, c++){
+            print(rawkeys[c]);
+            System.out.print("                ");
+            print(Decryption(rawkeys[c], cipherText[i]));
+            System.out.print("                  ");
+            print(cipherText[i]);
+            System.out.println();
+        }
+//        for(int i = 0; i < rawkeys.length; i++){
+//            for(int l = 0; l < rawkeys[i].length; l++){
+//                System.out.print(rawkeys[i][l]);
+//            }
+//            System.out.print("                ");
+//            if(i < plainText.length) {
+//                for (int l = 0; l < plainText[i].length; l++) {
+//                    System.out.print(plainText[i][l]);
+//                }
+//            }
+//            else{
+//
+//            }
+//            System.out.print("                    ");
+//            for(int l = 0; l < encryption[i].length; l++){
+//                System.out.print(encryption[i][l]);
+//            }
+//            System.out.println();
+//        }
 
     }
 
@@ -346,7 +395,7 @@ public class SDES {
         for (int i = 0; i < arr.length; i++) {
             System.out.print(arr[i]);
         }
-        System.out.println();
+        //System.out.println();
     }
 
     public static byte[] Cipher(byte[] rawkey, byte[] plaintext) {
